@@ -1,0 +1,75 @@
+---
+// src/pages/index.astro
+const title = "Easyly - Tools Sederhana & Bermanfaat";
+
+// Daftar 23 tools pilihanmu (Tanpa nomor indeks)
+const tools = [
+  { name: "Generator Surat Lamaran Kerja AI-Ready", slug: "surat-lamaran", desc: "Membuat draf surat lamaran kerja formal secara instan." },
+  { name: "Alat Pengonversi Skala Resep Makanan", slug: "resep-makanan", desc: "Mengubah takaran bahan makanan otomatis berdasarkan jumlah porsi." },
+  { name: "Kalkulator Gizi dan Kalori Makanan Indonesia", slug: "gizi-kalori", desc: "Menghitung kalori makanan lokal seperti nasi goreng, rendang, dll." },
+  { name: "Generator Password Super Aman & Pengecek Kekuatan Sandi", slug: "generator-password", desc: "Melindungi akun digital dari peretasan dengan sandi kuat." },
+  { name: "Kalkulator Zakat, Infaq, dan Shodaqoh Ringan", slug: "kalkulator-zakat", desc: "Memudahkan menghitung kewajiban finansial umat Muslim." },
+  { name: "Panduan Pertolongan Pertama (P3K) Interaktif", slug: "panduan-p3k", desc: "Panduan cepat penanganan luka bakar, tersedak, dan situasi darurat." },
+  { name: "Generator QR Code Gratis untuk UMKM", slug: "qr-umkm", desc: "Membuat QR Code menu, WiFi, atau kontak bisnis tanpa iklan." },
+  { name: "Kalkulator Masa Subur & Kalender Menstruasi", slug: "masa-subur", desc: "Membantu kesehatan reproduksi wanita dengan privasi tinggi." },
+  { name: "Generator Surat Perjanjian Jual Beli / Kontrak Sederhana", slug: "surat-perjanjian", desc: "Template hukum instan yang legal dan mudah diedit." },
+  { name: "Generator Ide Masakan dari Bahan Sisa Kulkas", slug: "sisa-kulkas", desc: "Mengurangi food waste dengan resep dari bahan yang tersisa." },
+  { name: "Kamus Bahasa Daerah Indonesia Ringan", slug: "kamus-daerah", desc: "Pelestarian bahasa daerah lewat kamus saku digital super cepat." },
+  { name: "Kalkulator Batas Pengeluaran Belanja Bulanan", slug: "belanja-bulanan", desc: "Menghitung batas aman belanja agar tidak konsumtif." },
+  { name: "Kalkulator Masa Kedaluwarsa Kosmetik & Skincare", slug: "kedaluwarsa-kosmetik", desc: "Mencegah iritasi kulit akibat produk yang sudah lewat masa pakai." },
+  { name: "Generator Teks Acak Indonesia / Lorem Ipsum Lokal", slug: "lorem-ipsum-lokal", desc: "Menyediakan teks tiruan bertema kuliner atau budaya lokal." },
+  { name: "Kalkulator Penyusutan Nilai Barang Elektronik/Aset", slug: "penyusutan-aset", desc: "Menghitung harga jual yang adil untuk HP atau laptop bekas." },
+  { name: "Generator Panduan Menjawab Pertanyaan Interview Kerja", slug: "interview-kerja", desc: "Simulasi latihan menjawab pertanyaan sulit saat wawancara kerja." },
+  { name: "Alat Pengubah Ukuran Foto KTP/Paspor Otomatis", slug: "foto-ktp", desc: "Memotong dan mengecilkan file foto sesuai standar resmi." },
+  { name: "Kalkulator Estimasi Tagihan Listrik Bulanan", slug: "tagihan-listrik", desc: "Menghitung konsumsi watt alat elektronik rumah tangga." },
+  { name: "Kalkulator Kecepatan Mengetik & Akurasi / Typing Test", slug: "typing-test", desc: "Melatih keterampilan mengetik sepuluh jari secara interaktif." },
+  { name: "Alat Enkripsi & Dekripsi Teks Rahasia / Cipher", slug: "cipher-rahasia", desc: "Mengamankan pesan teks menggunakan algoritma sederhana." },
+  { name: "Kalkulator Estimasi Biaya Servis Kendaraan Bermotor", slug: "servis-kendaraan", desc: "Panduan budget berkala untuk ganti oli dan suku cadang." },
+  { name: "Pencatatan Mood Harian Sederhana / Mood Tracker", slug: "mood-tracker", desc: "Membantu evaluasi kesehatan mental mingguan dengan emoji." },
+  { name: "Alat Pembuat Teks Kapitalisasi Otomatis / Title Case", slug: "kapitalisasi-teks", desc: "Mengubah format judul tulisan menjadi huruf besar-kecil yang benar." }
+];
+---
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; }
+    header { background-color: #2c3e50; color: white; padding: 2rem; text-align: center; }
+    h1 { margin: 0; font-size: 2.5rem; }
+    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+    .card { background: white; border-radius: 8px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s; }
+    .card:hover { transform: translateY(-5px); }
+    .card h2 { font-size: 1.2rem; margin-top: 0; color: #2c3e50; }
+    .card p { font-size: 0.9rem; color: #666; line-height: 1.4; }
+    .btn { display: inline-block; background-color: #3498db; color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; text-align: center; font-weight: bold; font-size: 0.85rem; margin-top: 1rem; }
+    .btn:hover { background-color: #2980b9; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>✨ Easyly</h1>
+    <p>Kumpulan tools sederhana yang bermanfaat untuk mempermudah hidupmu </p>
+	<font color="white">by Mr.Rm19 github.com/Rm19x
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      {tools.map((tool) => (
+        <div class="card">
+          <div>
+            <h2>{tool.name}</h2>
+            <p>{tool.desc}</p>
+          </div>
+          <a href={`easyly/tools/${tool.slug}`} class="btn">Buka Alat</a>
+        </div>
+      ))}
+    </div>
+  </main>
+
+</body>
+</html>
