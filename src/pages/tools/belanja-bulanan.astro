@@ -1,0 +1,204 @@
+---
+// src/pages/tools/belanja-bulanan.astro
+const title = "Kalkulator Anggaran Belanja Bulanan - Easyly";
+---
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background-color: #2c3e50; color: white; padding: 1.5rem; text-align: center; }
+    .nav-back { display: inline-block; color: white; text-decoration: none; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid white; padding: 0.3rem 0.8rem; border-radius: 4px; }
+    .nav-back:hover { background: rgba(255,255,255,0.1); }
+    .container { max-width: 750px; margin: 2rem auto; padding: 0 1rem; flex: 1; }
+    .card { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 1.5rem; }
+    .form-group { margin-bottom: 1.2rem; }
+    label { display: block; font-weight: bold; margin-bottom: 0.5rem; color: #2c3e50; }
+    input { width: 100%; padding: 0.7rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1rem; }
+    .flex-row { display: flex; gap: 1rem; align-items: flex-end; }
+    .btn { background-color: #27ae60; color: white; border: none; padding: 0.75rem 1.2rem; border-radius: 4px; font-weight: bold; font-size: 1rem; cursor: pointer; }
+    .btn:hover { background-color: #219653; }
+    .btn-add { background-color: #2980b9; }
+    .btn-add:hover { background-color: #2471a3; }
+    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-top: 1rem; font-weight: bold; text-align: center; }
+    .summary-item { background: #f8f9fa; padding: 1rem; border-radius: 6px; border: 1px solid #e9ecef; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; }
+    th, td { border: 1px solid #ddd; padding: 0.8rem; text-align: left; }
+    th { background-color: #f2f2f2; color: #2c3e50; }
+    .delete-btn { background: #e74c3c; color: white; border: none; padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
+    .delete-btn:hover { background: #c0392b; }
+    footer { background-color: #2c3e50; color: #bdc3c7; text-align: center; padding: 1rem; font-size: 0.9rem; margin-top: 2rem; }
+    footer a { color: #3498db; text-decoration: none; font-weight: bold; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="nav-back">⬅ Kembali ke Beranda</a>
+    <h1>💰 Kalkulator Anggaran Belanja Bulanan</h1>
+    <p>Kelola alokasi dana belanja dan catat pengeluaran pos kebutuhan harian secara praktis</p>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <div class="flex-row">
+        <div class="form-group" style="flex: 1; margin: 0;">
+          <label for="anggaranInput">Atur Total Anggaran Belanja (Rp)</label>
+          <input type="number" id="anggaranInput" value="2000000" placeholder="Contoh: 2000000" />
+        </div>
+        <button class="btn" id="setAnggaranBtn">Perbarui Dana</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <label style="margin-bottom: 0.8rem; display: block;">➕ Tambah Pengeluaran Belanja Baru:</label>
+      <div class="flex-row" style="margin-bottom: 1.5rem;">
+        <div style="flex: 2;">
+          <input type="text" id="namaItem" placeholder="Contoh: Beli Beras & Minyak" />
+        </div>
+        <div style="flex: 1.5;">
+          <input type="number" id="hargaItem" placeholder="Biaya (Rp)" />
+        </div>
+        <button class="btn btn-add" id="tambahItemBtn">Catat</button>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-item">
+          <div style="color: #2980b9;">📥 Total Anggaran</div>
+          <div id="txtTotalAnggaran" style="font-size: 1.2rem; margin-top: 0.3rem;">Rp 2.000.000</div>
+        </div>
+        <div class="summary-item">
+          <div style="color: #e67e22;">📤 Total Terpakai</div>
+          <div id="txtTotalTerpakai" style="font-size: 1.2rem; margin-top: 0.3rem;">Rp 0</div>
+        </div>
+        <div class="summary-item">
+          <div style="color: #27ae60;" id="lblSisa">🟢 Sisa Saldo</div>
+          <div id="txtSisaSaldo" style="font-size: 1.2rem; margin-top: 0.3rem;">Rp 2.000.000</div>
+        </div>
+      </div>
+
+      <table id="belanjaTable">
+        <thead>
+          <tr>
+            <th>Nama Keperluan / Item</th>
+            <th>Nominal Biaya</th>
+            <th style="width: 80px;">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="belanjaBody">
+          <tr>
+            <td colspan="3" style="text-align: center; color: #999;">Belum ada catatan belanja belanjaan.</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>Developed with ❤️ by <strong>Mr.Rm19</strong> | <a href="https://github.com/Rm19x" target="_blank" rel="noopener noreferrer">github.com/Rm19x</a></p>
+  </footer>
+
+  <script>
+    let anggaranUtama = 2000000;
+    let listBelanja = [];
+
+    const anggaranInput = document.getElementById('anggaranInput');
+    const setAnggaranBtn = document.getElementById('setAnggaranBtn');
+    const namaItem = document.getElementById('namaItem');
+    const hargaItem = document.getElementById('hargaItem');
+    const tambahItemBtn = document.getElementById('tambahItemBtn');
+    
+    const belanjaBody = document.getElementById('belanjaBody');
+    const txtTotalAnggaran = document.getElementById('txtTotalAnggaran');
+    const txtTotalTerpakai = document.getElementById('txtTotalTerpakai');
+    const txtSisaSaldo = document.getElementById('txtSisaSaldo');
+    const lblSisa = document.getElementById('lblSisa');
+
+    function formatRupiah(angka) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(angka);
+    }
+
+    // Aksi ganti modal anggaran dasar
+    setAnggaranBtn.addEventListener('click', () => {
+      const nominal = parseFloat(anggaranInput.value) || 0;
+      if (nominal < 0) {
+        alert('Anggaran tidak boleh minus!');
+        return;
+      }
+      anggaranUtama = nominal;
+      updateKalkulasi();
+    });
+
+    // Tambah item pengeluaran baru
+    tambahItemBtn.addEventListener('click', () => {
+      const nama = namaItem.value.trim();
+      const biaya = parseFloat(hargaItem.value) || 0;
+
+      if (!nama || biaya <= 0) {
+        alert('Silakan masukkan nama keperluan dan biaya belanja dengan benar!');
+        return;
+      }
+
+      listBelanja.push({ nama, biaya });
+      
+      // Reset input baris setelah input berhasil
+      namaItem.value = '';
+      hargaItem.value = '';
+      
+      updateKalkulasi();
+    });
+
+    function updateKalkulasi() {
+      // Hitung total akumulasi pengeluaran
+      let totalTerpakai = 0;
+      listBelanja.forEach(item => {
+        totalTerpakai += item.biaya;
+      });
+
+      let sisaSaldo = anggaranUtama - totalTerpakai;
+
+      // Update Teks Atas
+      txtTotalAnggaran.textContent = formatRupiah(anggaranUtama);
+      txtTotalTerpakai.textContent = formatRupiah(totalTerpakai);
+      txtSisaSaldo.textContent = formatRupiah(sisaSaldo);
+
+      // Warning warna jika sisa minus (overbudget)
+      if (sisaSaldo < 0) {
+        lblSisa.textContent = "🔴 Overbudget / Minus";
+        txtSisaSaldo.style.color = "#e74c3c";
+      } else {
+        lblSisa.textContent = "🟢 Sisa Saldo";
+        txtSisaSaldo.style.color = "#27ae60";
+      }
+
+      // Render Baris Tabel
+      if (listBelanja.length === 0) {
+        belanjaBody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #999;">Belum ada catatan belanja belanjaan.</td></tr>`;
+        return;
+      }
+
+      belanjaBody.innerHTML = '';
+      listBelanja.forEach((item, index) => {
+        let tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.nama}</td>
+          <td>${formatRupiah(item.biaya)}</td>
+          <td><button class="delete-btn" onclick="hapusBelanja(${index})">Hapus</button></td>
+        `;
+        belanjaBody.appendChild(tr);
+      });
+    }
+
+    // Dipasang ke obyek global window agar terikat dengan aksi tombol dinamis Astro
+    window.hapusBelanja = function(index) {
+      listBelanja.splice(index, 1);
+      updateKalkulasi();
+    };
+  </script>
+</body>
+</html>
