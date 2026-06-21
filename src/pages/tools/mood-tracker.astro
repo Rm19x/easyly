@@ -1,0 +1,155 @@
+---
+// src/pages/tools/mood-tracker.astro
+const title = "Jurnal Suasana Hati (Mood Tracker) - Easyly";
+---
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background-color: #2c3e50; color: white; padding: 1.5rem; text-align: center; }
+    .nav-back { display: inline-block; color: white; text-decoration: none; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid white; padding: 0.3rem 0.8rem; border-radius: 4px; }
+    .nav-back:hover { background: rgba(255,255,255,0.1); }
+    .container { max-width: 650px; margin: 2rem auto; padding: 0 1rem; flex: 1; }
+    .card { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 1.5rem; }
+    .form-group { margin-bottom: 1.2rem; }
+    label { display: block; font-weight: bold; margin-bottom: 0.5rem; color: #2c3e50; }
+    .mood-options { display: flex; justify-content: space-around; gap: 0.5rem; margin: 1rem 0; }
+    .mood-btn { background: #f8f9fa; border: 2px solid #e2e8f0; border-radius: 8px; padding: 0.8rem; font-size: 1.8rem; cursor: pointer; transition: all 0.2s; flex: 1; text-align: center; }
+    .mood-btn:hover { transform: scale(1.05); border-color: #3498db; }
+    .mood-btn.selected { background: #e0f2fe; border-color: #0284c7; box-shadow: 0 0 8px rgba(2,132,199,0.2); }
+    .mood-label { display: block; font-size: 0.8rem; color: #666; margin-top: 0.3rem; font-weight: normal; }
+    textarea { width: 100%; height: 80px; padding: 0.7rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1rem; resize: vertical; }
+    .btn { display: block; width: 100%; background-color: #27ae60; color: white; border: none; padding: 0.8rem; border-radius: 4px; font-weight: bold; font-size: 1rem; cursor: pointer; text-align: center; margin-top: 1rem; }
+    .btn:hover { background-color: #219653; }
+    .history-list { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.8rem; }
+    .history-item { display: flex; align-items: center; justify-content: space-between; background: #f8f9fa; padding: 1rem; border-radius: 6px; border: 1px solid #e9ecef; }
+    .history-meta { font-size: 0.85rem; color: #666; }
+    footer { background-color: #2c3e50; color: #bdc3c7; text-align: center; padding: 1rem; font-size: 0.9rem; margin-top: 2rem; }
+    footer a { color: #3498db; text-decoration: none; font-weight: bold; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="nav-back">⬅ Kembali ke Beranda</a>
+    <h1>🌱 Jurnal Suasana Hati (Mood Tracker)</h1>
+    <p>Ekspresikan emosi Anda hari ini untuk melacak tren kesehatan mental secara berkala</p>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <label>Bagaimana perasaanmu hari ini?</label>
+      <div class="mood-options">
+        <button class="mood-btn" data-mood="Senang" data-emoji="😊">
+          😊 <span class="mood-label">Senang</span>
+        </button>
+        <button class="mood-btn" data-mood="Biasa" data-emoji="😐">
+          😐 <span class="mood-label">Biasa</span>
+        </button>
+        <button class="mood-btn" data-mood="Sedih" data-emoji="😢">
+          😢 <span class="mood-label">Sedih</span>
+        </button>
+        <button class="mood-btn" data-mood="Marah" data-emoji="😡">
+          😡 <span class="mood-label">Marah</span>
+        </button>
+      </div>
+
+      <div class="form-group">
+        <label for="catatanMood">Catatan Kecil (Opsional)</label>
+        <textarea id="catatanMood" placeholder="Ceritakan sedikit hal yang membuatmu merasa demikian..."></textarea>
+      </div>
+
+      <button class="btn" id="simpanMoodBtn">Simpan Catatan Hari Ini</button>
+    </div>
+
+    <div class="card">
+      <label style="color: #2c3e50; margin-bottom: 0.8rem; display: block;">⏳ Riwayat Suasana Hatimu:</label>
+      <div id="historyList" class="history-list">
+        </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Developed with ❤️ by <strong>Mr.Rm19</strong> | <a href="https://github.com/Rm19x" target="_blank" rel="noopener noreferrer">github.com/Rm19x</a></p>
+  </footer>
+
+  <script>
+    let moodTerpilih = "";
+    let emojiTerpilih = "";
+    let databaseMood = [];
+
+    const moodButtons = document.querySelectorAll('.mood-btn');
+    const catatanMood = document.getElementById('catatanMood');
+    const simpanMoodBtn = document.getElementById('simpanMoodBtn');
+    const historyList = document.getElementById('historyList');
+
+    // Handle pemilihan tombol emosi visual
+    moodButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        moodButtons.forEach(btn => btn.classList.remove('selected'));
+        button.classList.add('selected');
+        moodTerpilih = button.getAttribute('data-mood');
+        emojiTerpilih = button.getAttribute('data-emoji');
+      });
+    });
+
+    function dapatkanTanggalHariIni() {
+      const opsi = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+      return new Date().toLocaleDateString('id-ID', opsi);
+    }
+
+    function renderHistori() {
+      if (databaseMood.length === 0) {
+        historyList.innerHTML = `<div style="text-align: center; color: #999; font-style: italic; padding: 1rem;">Belum ada riwayat tercatat. Mulailah jurnal pertamamu di atas!</div>`;
+        return;
+      }
+
+      historyList.innerHTML = "";
+      databaseMood.forEach(item => {
+        const div = document.createElement('div');
+        div.className = "history-item";
+        div.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <span style="font-size: 2rem;">${item.emoji}</span>
+            <div>
+              <div style="font-weight: bold; color: #2c3e50;">${item.mood}</div>
+              <div style="font-size: 0.9rem; color: #555; margin-top: 0.2rem;">${item.catatan || "<i>Tidak ada catatan tambahan</i>"}</div>
+            </div>
+          </div>
+          <div class="history-meta">${item.waktu}</div>
+        `;
+        historyList.appendChild(div);
+      });
+    }
+
+    simpanMoodBtn.addEventListener('click', () => {
+      if (!moodTerpilih) {
+        alert('Silakan pilih salah satu emotikon suasana hati Anda terlebih dahulu!');
+        return;
+      }
+
+      const catatan = catatanMood.value.trim();
+      const waktu = dapatkanTanggalHariIni();
+
+      // Tambahkan data ke baris paling atas array (paling baru)
+      databaseMood.unshift({ mood: moodTerpilih, emoji: emojiTerpilih, catatan, waktu });
+
+      // Reset Form Input
+      catatanMood.value = "";
+      moodButtons.forEach(btn => btn.classList.remove('selected'));
+      moodTerpilih = "";
+      emojiTerpilih = "";
+
+      renderHistori();
+    });
+
+    // Jalankan render awal
+    renderHistori();
+  </script>
+</body>
+</html>

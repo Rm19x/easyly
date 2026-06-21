@@ -1,0 +1,171 @@
+---
+// src/pages/tools/typing-test.astro
+const title = "Tes Kecepatan Mengetik (Typing Test) - Easyly";
+---
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background-color: #2c3e50; color: white; padding: 1.5rem; text-align: center; }
+    .nav-back { display: inline-block; color: white; text-decoration: none; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid white; padding: 0.3rem 0.8rem; border-radius: 4px; }
+    .nav-back:hover { background: rgba(255,255,255,0.1); }
+    .container { max-width: 700px; margin: 2rem auto; padding: 0 1rem; flex: 1; }
+    .card { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .text-target { background: #f8f9fa; border: 1px solid #e2e8f0; padding: 1.2rem; border-radius: 6px; font-size: 1.2rem; line-height: 1.6; letter-spacing: 0.5px; margin-bottom: 1.5rem; user-select: none; }
+    textarea { width: 100%; height: 100px; padding: 0.8rem; border: 2px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1.1rem; resize: none; transition: border-color 0.2s; }
+    textarea:focus { border-color: #2980b9; outline: none; }
+    .stats-row { display: flex; justify-content: space-around; margin-top: 1.5rem; background: #eef7fa; padding: 1rem; border-radius: 6px; border: 1px solid #d0e7ee; }
+    .stat-item { text-align: center; }
+    .stat-val { font-size: 1.8rem; font-weight: bold; color: #2980b9; }
+    .stat-lbl { font-size: 0.85rem; color: #555; font-weight: bold; }
+    .btn { display: block; width: 100%; background-color: #27ae60; color: white; border: none; padding: 0.8rem; border-radius: 4px; font-weight: bold; font-size: 1rem; cursor: pointer; text-align: center; margin-top: 1.5rem; }
+    .btn:hover { background-color: #219653; }
+    footer { background-color: #2c3e50; color: #bdc3c7; text-align: center; padding: 1rem; font-size: 0.9rem; margin-top: 2rem; }
+    footer a { color: #3498db; text-decoration: none; font-weight: bold; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="nav-back">⬅ Kembali ke Beranda</a>
+    <h1>⌨️ Tes Kecepatan Mengetik (Typing Test)</h1>
+    <p>Uji seberapa cepat dan akurat kemampuan mengetik jari Anda dalam bahasa Indonesia</p>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      
+      <div class="text-target" id="textTarget">
+        Gotong royong adalah kunci utama kemajuan bangsa Indonesia dari masa ke masa. Mari kita terus belajar dan berkarya demi masa depan.
+      </div>
+
+      <textarea id="typingInput" placeholder="Klik di sini lalu mulailah mengetik teks di atas untuk memulai tes..."></textarea>
+
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-val" id="valWpm">0</div>
+          <div class="stat-lbl">WPM (Kecepatan)</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val" id="valAkurasi">100%</div>
+          <div class="stat-lbl">Akurasi</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val" id="valWaktu">0s</div>
+          <div class="stat-lbl">Waktu Tempuh</div>
+        </div>
+      </div>
+
+      <button class="btn" id="resetBtn">Ulangi Tes Baru</button>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>Developed with ❤️ by <strong>Mr.Rm19</strong> | <a href="https://github.com/Rm19x" target="_blank" rel="noopener noreferrer">github.com/Rm19x</a></p>
+  </footer>
+
+  <script>
+    const teksSampel = [
+      "Gotong royong adalah kunci utama kemajuan bangsa Indonesia dari masa ke masa. Mari kita terus belajar dan berkarya demi masa depan.",
+      "Teknologi informasi berkembang sangat pesat membawa perubahan besar di seluruh aspek kehidupan bermasyarakat modern saat ini.",
+      "Menjaga kesehatan tubuh dengan berolahraga secara rutin dan mengonsumsi makanan bergizi adalah investasi terbaik jangka panjang."
+    ];
+
+    const textTarget = document.getElementById('textTarget');
+    const typingInput = document.getElementById('typingInput');
+    const valWpm = document.getElementById('valWpm');
+    const valAkurasi = document.getElementById('valAkurasi');
+    const valWaktu = document.getElementById('valWaktu');
+    const resetBtn = document.getElementById('resetBtn');
+
+    let waktuMulai = null;
+    let timerInterval = null;
+    let targetTeksAktif = textTarget.textContent.trim();
+    let tesSelesai = false;
+
+    function acakTeksBaru() {
+      const indeks = Math.floor(Math.random() * teksSampel.length);
+      targetTeksAktif = teksSampel[indeks];
+      textTarget.textContent = targetTeksAktif;
+      resetSistem();
+    }
+
+    function resetSistem() {
+      clearInterval(timerInterval);
+      waktuMulai = null;
+      timerInterval = null;
+      tesSelesai = false;
+      typingInput.value = "";
+      typingInput.disabled = false;
+      valWpm.textContent = "0";
+      valAkurasi.textContent = "100%";
+      valWaktu.textContent = "0s";
+    }
+
+    typingInput.addEventListener('input', () => {
+      if (tesSelesai) return;
+
+      const inputVal = typingInput.value;
+
+      // Jalankan pencatat waktu saat karakter pertama diketik
+      if (!waktuMulai && inputVal.length > 0) {
+        waktuMulai = new Date();
+        timerInterval = setInterval(updateTimer, 1000);
+      }
+
+      // Hitung Akurasi secara real-time
+      let karakterBenar = 0;
+      const minLen = Math.min(inputVal.length, targetTeksAktif.length);
+      for (let i = 0; i < minLen; i++) {
+        if (inputVal[i] === targetTeksAktif[i]) {
+          karakterBenar++;
+        }
+      }
+      
+      const akurasi = inputVal.length > 0 ? Math.round((karakterBenar / inputVal.length) * 100) : 100;
+      valAkurasi.textContent = akurasi + "%";
+
+      // Cek apakah ketikan sudah selesai sempurna sesuai teks target
+      if (inputVal === targetTeksAktif) {
+        clearInterval(timerInterval);
+        tesSelesai = true;
+        typingInput.disabled = true;
+        kalkulasiWpmAkhir();
+      }
+    });
+
+    function updateTimer() {
+      if (!waktuMulai) return;
+      const detik = Math.floor((new Date() - waktuMulai) / 1000);
+      valWaktu.textContent = detik + "s";
+      
+      // Update WPM dinamis
+      if (detik > 0) {
+        const jumlahKata = typingInput.value.length / 5; // Standar global: 1 kata = 5 karakter
+        const wpm = Math.round(jumlahKata / (detik / 60));
+        valWpm.textContent = wpm;
+      }
+    }
+
+    function kalkulasiWpmAkhir() {
+      const totalDetik = Math.max(1, Math.floor((new Date() - waktuMulai) / 1000));
+      const jumlahKata = targetTeksAktif.length / 5;
+      const wpmAkhir = Math.round(jumlahKata / (totalDetik / 60));
+      valWpm.textContent = wpmAkhir;
+    }
+
+    resetBtn.addEventListener('click', () => {
+      acakTeksBaru();
+    });
+
+    // Inisialisasi awal acak teks
+    acakTeksBaru();
+  </script>
+</body>
+</html>

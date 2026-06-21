@@ -1,0 +1,209 @@
+---
+// src/pages/tools/gizi-kalori.astro
+const title = "Kalkulator Gizi & Kalori Makanan Indonesia - Easyly";
+---
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background-color: #2c3e50; color: white; padding: 1.5rem; text-align: center; }
+    .nav-back { display: inline-block; color: white; text-decoration: none; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid white; padding: 0.3rem 0.8rem; border-radius: 4px; }
+    .nav-back:hover { background: rgba(255,255,255,0.1); }
+    .container { max-width: 800px; margin: 2rem auto; padding: 0 1rem; flex: 1; }
+    .card { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .row { display: flex; gap: 1rem; margin-bottom: 1.2rem; align-items: flex-end; }
+    .form-group { flex: 2; }
+    .form-group-qty { flex: 1; }
+    label { display: block; font-weight: bold; margin-bottom: 0.5rem; color: #2c3e50; }
+    select, input { width: 100%; padding: 0.7rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1rem; }
+    .btn { background-color: #9b59b6; color: white; border: none; padding: 0.75rem 1.2rem; border-radius: 4px; font-weight: bold; font-size: 1rem; cursor: pointer; }
+    .btn:hover { background-color: #8e44ad; }
+    .btn-block { display: block; width: 100%; margin-top: 1rem; background-color: #2c3e50; }
+    .btn-block:hover { background-color: #1a252f; }
+    .table-responsive { margin-top: 1.5rem; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; }
+    th, td { border: 1px solid #ddd; padding: 0.8rem; text-align: left; }
+    th { background-color: #f2f2f2; color: #2c3e50; }
+    .summary-box { background: #f9f5fc; border-left: 5px solid #9b59b6; padding: 1.2rem; border-radius: 4px; margin-top: 1.5rem; display: none; }
+    .summary-title { font-size: 1.1rem; font-weight: bold; color: #8e44ad; margin-top: 0; }
+    .delete-btn { background: #e74c3c; color: white; border: none; padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
+    .delete-btn:hover { background: #c0392b; }
+    footer { background-color: #2c3e50; color: #bdc3c7; text-align: center; padding: 1rem; font-size: 0.9rem; margin-top: 2rem; }
+    footer a { color: #3498db; text-decoration: none; font-weight: bold; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="nav-back">⬅ Kembali ke Beranda</a>
+    <h1>🍲 Kalkulator Gizi & Kalori Makanan Indonesia</h1>
+    <p>Hitung total kalori dan gizi harian dari menu makanan lokal nusantara</p>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <div class="row">
+        <div class="form-group">
+          <label for="makananSelect">Pilih Makanan / Minuman</label>
+          <select id="makananSelect"></select>
+        </div>
+        <div class="form-group-qty">
+          <label for="porsiInput">Jumlah Porsi</label>
+          <input type="number" id="porsiInput" value="1" min="0.5" step="0.5" />
+        </div>
+        <div>
+          <button class="btn" id="tambahBtn">Tambahkan</button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table id="menuTable">
+          <thead>
+            <tr>
+              <th>Nama Kuliner</th>
+              <th>Porsi</th>
+              <th>Kalori (kcal)</th>
+              <th>Protein</th>
+              <th>Karbohidrat</th>
+              <th>Lemak</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="menuBody">
+            <tr>
+              <td colspan="7" style="text-align: center; color: #999;">Belum ada menu yang ditambahkan.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="summary-box" id="summaryBox">
+        <p class="summary-title">📊 Total Akumulasi Nutrisi:</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; font-weight: bold; text-align: center;">
+          <div style="background: white; padding: 0.8rem; border-radius: 4px; box-shadow: inset 0 0 4px rgba(0,0,0,0.05);">
+            <div style="color: #e67e22;">🔥 Kalori</div>
+            <div id="totalKalori" style="font-size: 1.3rem; margin-top: 0.3rem;">0 kcal</div>
+          </div>
+          <div style="background: white; padding: 0.8rem; border-radius: 4px; box-shadow: inset 0 0 4px rgba(0,0,0,0.05);">
+            <div style="color: #2ecc71;">🥩 Protein</div>
+            <div id="totalProtein" style="font-size: 1.3rem; margin-top: 0.3rem;">0g</div>
+          </div>
+          <div style="background: white; padding: 0.8rem; border-radius: 4px; box-shadow: inset 0 0 4px rgba(0,0,0,0.05);">
+            <div style="color: #3498db;">🍞 Karbohidrat</div>
+            <div id="totalKarbo" style="font-size: 1.3rem; margin-top: 0.3rem;">0g</div>
+          </div>
+          <div style="background: white; padding: 0.8rem; border-radius: 4px; box-shadow: inset 0 0 4px rgba(0,0,0,0.05);">
+            <div style="color: #f1c40f;">🧀 Lemak</div>
+            <div id="totalLemak" style="font-size: 1.3rem; margin-top: 0.3rem;">0g</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Developed with ❤️ by <strong>Mr.Rm19</strong> | <a href="https://github.com/Rm19x" target="_blank" rel="noopener noreferrer">github.com/Rm19x</a></p>
+  </footer>
+
+  <script>
+    // Database Nutrisi Lokal per Porsi Standar
+    const dbMakanan = [
+      { nama: "Nasi Putih (1 piring/200g)", kalori: 260, protein: 5, karbo: 57, lemak: 0.5 },
+      { nama: "Nasi Goreng + Telur (1 porsi)", kalori: 520, protein: 14, karbo: 66, lemak: 18 },
+      { nama: "Rendang Daging Sapi (1 potong)", kalori: 195, protein: 12, karbo: 4, lemak: 14 },
+      { nama: "Sate Ayam (5 tusuk + bumbu)", kalori: 350, protein: 22, karbo: 15, lemak: 20 },
+      { nama: "Ayam Goreng (1 potong paha/dada)", kalori: 240, protein: 18, karbo: 0, lemak: 16 },
+      { nama: "Telur Ceplok / Goreng (1 butir)", kalori: 92, protein: 6.5, karbo: 0.4, lemak: 7 },
+      { nama: "Tempe Goreng Tepung (1 potong)", kalori: 110, protein: 4, karbo: 9, lemak: 6 },
+      { nama: "Tahu Goreng Sederhana (1 potong)", kalori: 75, protein: 4.5, karbo: 2, lemak: 5.5 },
+      { nama: "Bakso Sapi Kuah (1 mangkok)", kalori: 320, protein: 16, karbo: 28, lemak: 15 },
+      { nama: "Gado-Gado + Bumbu Kacang (1 porsi)", kalori: 310, protein: 11, karbo: 29, lemak: 17 },
+      { nama: "Mie Instan Rebus (1 bungkus)", kalori: 380, protein: 8, karbo: 54, lemak: 14 },
+      { nama: "Kerupuk Putih Kaleng (1 buah)", kalori: 65, protein: 0.1, karbo: 10, lemak: 2.5 },
+      { nama: "Es Teh Manis (1 gelas)", kalori: 90, protein: 0, karbo: 22, lemak: 0 }
+    ];
+
+    const makananSelect = document.getElementById('makananSelect');
+    const porsiInput = document.getElementById('porsiInput');
+    const tambahBtn = document.getElementById('tambahBtn');
+    const menuBody = document.getElementById('menuBody');
+    const summaryBox = document.getElementById('summaryBox');
+
+    let listKeranjang = [];
+
+    // Mengisi pilihan select dari DB
+    dbMakanan.forEach((item, index) => {
+      let opt = document.createElement('option');
+      opt.value = index;
+      opt.textContent = `${item.nama} - ${item.kalori} kcal`;
+      makananSelect.appendChild(opt);
+    });
+
+    tambahBtn.addEventListener('click', () => {
+      const selectedIndex = makananSelect.value;
+      const porsi = parseFloat(porsiInput.value) || 1;
+      const makananInfo = dbMakanan[selectedIndex];
+
+      listKeranjang.push({
+        ...makananInfo,
+        porsi: porsi
+      });
+
+      updateTable();
+    });
+
+    function updateTable() {
+      if (listKeranjang.length === 0) {
+        menuBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #999;">Belum ada menu yang ditambahkan.</td></tr>`;
+        summaryBox.style.display = 'none';
+        return;
+      }
+
+      menuBody.innerHTML = '';
+      let tKalori = 0, tProtein = 0, tKarbo = 0, tLemak = 0;
+
+      listKeranjang.forEach((item, index) => {
+        const cKalori = item.kalori * item.porsi;
+        const cProtein = item.protein * item.porsi;
+        const cKarbo = item.karbo * item.porsi;
+        const cLemak = item.lemak * item.porsi;
+
+        tKalori += cKalori;
+        tProtein += cProtein;
+        tKarbo += cKarbo;
+        tLemak += cLemak;
+
+        let row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${item.nama}</td>
+          <td>${item.porsi}</td>
+          <td>${cKalori.toFixed(0)}</td>
+          <td>${cProtein.toFixed(1)}g</td>
+          <td>${cKarbo.toFixed(1)}g</td>
+          <td>${cLemak.toFixed(1)}g</td>
+          <td><button class="delete-btn" onclick="hapusMenu(${index})">Hapus</button></td>
+        `;
+        menuBody.appendChild(row);
+      });
+
+      document.getElementById('totalKalori').textContent = `${tKalori.toFixed(0)} kcal`;
+      document.getElementById('totalProtein').textContent = `${tProtein.toFixed(1)}g`;
+      document.getElementById('totalKarbo').textContent = `${tKarbo.toFixed(1)}g`;
+      document.getElementById('totalLemak').textContent = `${tLemak.toFixed(1)}g`;
+
+      summaryBox.style.display = 'block';
+    }
+
+    // Dipasang ke window agar fungsi onclick sebaris pada tag HTML bisa dipanggil di sistem modul Astro
+    window.hapusMenu = function(index) {
+      listKeranjang.splice(index, 1);
+      updateTable();
+    };
+  </script>
+</body>
+</html>

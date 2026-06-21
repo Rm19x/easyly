@@ -1,0 +1,152 @@
+---
+// src/pages/tools/kamus-daerah.astro
+const title = "Kamus Bahasa Daerah Indonesia Ringan - Easyly";
+---
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background-color: #2c3e50; color: white; padding: 1.5rem; text-align: center; }
+    .nav-back { display: inline-block; color: white; text-decoration: none; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid white; padding: 0.3rem 0.8rem; border-radius: 4px; }
+    .nav-back:hover { background: rgba(255,255,255,0.1); }
+    .container { max-width: 700px; margin: 2rem auto; padding: 0 1rem; flex: 1; }
+    .card { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.2rem; }
+    label { display: block; font-weight: bold; margin-bottom: 0.5rem; color: #2c3e50; }
+    select, input { width: 100%; padding: 0.7rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1rem; }
+    .btn { display: block; width: 100%; background-color: #2980b9; color: white; border: none; padding: 0.8rem; border-radius: 4px; font-weight: bold; font-size: 1rem; cursor: pointer; text-align: center; margin-top: 1rem; }
+    .btn:hover { background-color: #2471a3; }
+    .result-box { margin-top: 2rem; display: none; background: #eef7fa; border-left: 5px solid #2980b9; padding: 1.2rem; border-radius: 4px; }
+    .result-title { font-size: 1.1rem; font-weight: bold; color: #2471a3; margin-top: 0; margin-bottom: 0.5rem; }
+    .word-output { font-size: 1.3rem; font-weight: bold; color: #2c3e50; margin: 0.3rem 0; }
+    .info-text { font-size: 0.85rem; color: #666; margin-top: 0.5rem; }
+    footer { background-color: #2c3e50; color: #bdc3c7; text-align: center; padding: 1rem; font-size: 0.9rem; margin-top: 2rem; }
+    footer a { color: #3498db; text-decoration: none; font-weight: bold; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="nav-back">⬅ Kembali ke Beranda</a>
+    <h1>🗣️ Kamus Bahasa Daerah Indonesia</h1>
+    <p>Terjemahkan kata kosakata sehari-hari antar bahasa daerah nusantara (Jawa, Sunda, Bali) dengan mudah</p>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="pilihBahasa">Pilih Bahasa Asal</label>
+          <select id="pilihBahasa">
+            <option value="sunda">Bahasa Sunda ➡️ Indonesia</option>
+            <option value="jawa">Bahasa Jawa ➡️ Indonesia</option>
+            <option value="bali">Bahasa Bali ➡️ Indonesia</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="kataInput">Masukkan Kata</label>
+          <input type="text" id="kataInput" placeholder="Contoh: damang, madang, dll..." />
+        </div>
+      </div>
+
+      <button class="btn" id="terjemahBtn">Terjemahkan Kata</button>
+
+      <div class="result-box" id="resultBox">
+        <p class="result-title">🎯 Hasil Terjemahan:</p>
+        <div class="word-output" id="txtHasil">-</div>
+        <div class="info-text" id="txtKeterangan"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>Developed with ❤️ by <strong>Mr.Rm19</strong> | <a href="https://github.com/Rm19x" target="_blank" rel="noopener noreferrer">github.com/Rm19x</a></p>
+  </footer>
+
+  <script>
+    // Database Kamus Kosakata Daerah Sederhana
+    const kamusData = {
+      sunda: {
+        "damang": "sehat / kabar baik",
+        "hatur nuhun": "terima kasih",
+        "punten": "permisi / maaf",
+        "mangga": "silakan",
+        "akang": "kakak laki-laki",
+        "teteh": "kakak perempuan",
+        "abdi": "saya",
+        "anjeun": "kamu",
+        "tuang": "makan",
+        "leueut": "minum",
+        "bisa": "tiasa",
+        "pergi": "mangkat / mios"
+      },
+      jawa: {
+        "apik": "bagus / baik",
+        "matur nuwun": "terima kasih",
+        "kulo": "saya (halus)",
+        "kowe": "kamu",
+        "madang": "makan",
+        "ngombe": "minum",
+        "sugeng enjang": "selamat pagi",
+        "tresno": "cinta",
+        "mlaku": "berjalan",
+        "turu": "tidur",
+        "ora": "tidak",
+        "sopo": "siapa"
+      },
+      bali: {
+        "rahajeng": "selamat (pagi/siang/malam)",
+        "suksma": "terima kasih",
+        "tiang": "saya",
+        "ragane": "kamu",
+        "ngajeng": "makan",
+        "melesir": "jalan-jalan / berlibur",
+        "jegeg": "cantik",
+        "bagus": "tampan / ganteng",
+        "ten": "tidak",
+        "kenken": "bagaimana",
+        "kabar": "orti"
+      }
+    };
+
+    const pilihBahasa = document.getElementById('pilihBahasa');
+    const kataInput = document.getElementById('kataInput');
+    const terjemahBtn = document.getElementById('terjemahBtn');
+    const resultBox = document.getElementById('resultBox');
+    const txtHasil = document.getElementById('txtHasil');
+    const txtKeterangan = document.getElementById('txtKeterangan');
+
+    terjemahBtn.addEventListener('click', () => {
+      const bahasa = pilihBahasa.value;
+      const kata = kataInput.value.trim().toLowerCase();
+
+      if (!kata) {
+        alert('Silakan masukkan kata yang ingin diterjemahkan!');
+        return;
+      }
+
+      const kamusBahasa = kamusData[bahasa];
+      
+      // Pencarian kata yang cocok
+      if (kamusBahasa && kamusBahasa[kata]) {
+        txtHasil.textContent = kamusBahasa[kata];
+        txtKeterangan.textContent = `Kata "${kata}" berhasil ditemukan dalam kamus bahasa ${bahasa.toUpperCase()}.`;
+      } else {
+        txtHasil.textContent = "Kata Tidak Ditemukan 🔍";
+        txtKeterangan.textContent = `Maaf, kata "${kata}" belum tersedia di database mini kami. Coba kata populer lain seperti "damang" (Sunda), "madang" (Jawa), atau "suksma" (Bali).`;
+      }
+
+      resultBox.style.display = 'block';
+      resultBox.scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>

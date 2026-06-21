@@ -1,0 +1,124 @@
+---
+// src/pages/tools/kapitalisasi-teks.astro
+const title = "Pengubah Huruf Kapital & Manipulasi Teks - Easyly";
+---
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background-color: #2c3e50; color: white; padding: 1.5rem; text-align: center; }
+    .nav-back { display: inline-block; color: white; text-decoration: none; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid white; padding: 0.3rem 0.8rem; border-radius: 4px; }
+    .nav-back:hover { background: rgba(255,255,255,0.1); }
+    .container { max-width: 700px; margin: 2rem auto; padding: 0 1rem; flex: 1; }
+    .card { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .form-group { margin-bottom: 1.2rem; }
+    label { display: block; font-weight: bold; margin-bottom: 0.5rem; color: #2c3e50; }
+    textarea { width: 100%; height: 140px; padding: 0.7rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1rem; resize: vertical; line-height: 1.5; }
+    .counter-info { font-size: 0.85rem; color: #666; margin-top: 0.3rem; text-align: right; }
+    .btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.8rem; margin-top: 1rem; }
+    .btn { border: none; padding: 0.7rem; border-radius: 4px; font-weight: bold; font-size: 0.95rem; cursor: pointer; text-align: center; color: white; transition: background 0.2s; }
+    .btn-blue { background-color: #2980b9; }
+    .btn-blue:hover { background-color: #2471a3; }
+    .btn-green { background-color: #27ae60; width: 100%; margin-top: 1.5rem; font-size: 1rem; padding: 0.8rem; }
+    .btn-green:hover { background-color: #219653; }
+    footer { background-color: #2c3e50; color: #bdc3c7; text-align: center; padding: 1rem; font-size: 0.9rem; margin-top: 2rem; }
+    footer a { color: #3498db; text-decoration: none; font-weight: bold; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="nav-back">⬅ Kembali ke Beranda</a>
+    <h1>🔤 Pengubah Kapitalisasi & Kasus Teks</h1>
+    <p>Ubah format huruf tulisan Anda menjadi kapital besar, kecil, atau format judul secara instan</p>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      
+      <div class="form-group">
+        <label for="teksArea">Masukkan Teks Tulisan Anda</label>
+        <textarea id="teksArea" placeholder="Ketik atau tempel (paste) paragraf artikel/tulisan Anda di sini..."></textarea>
+        <div class="counter-info" id="counterInfo">Karakter: 0 | Kata: 0</div>
+      </div>
+
+      <label style="font-size: 0.95rem; color: #2c3e50; display: block; margin-bottom: 0.3rem;">Pilih Operasi Transformasi:</label>
+      <div class="btn-grid">
+        <button class="btn btn-blue" id="btnUpper">HURUF BESAR</button>
+        <button class="btn btn-blue" id="btnLower">huruf kecil</button>
+        <button class="btn btn-blue" id="btnTitle">Format Judul</button>
+        <button class="btn btn-blue" id="btnSentence">Format Kalimat</button>
+      </div>
+
+      <button class="btn btn-green" id="btnCopy">📋 Salin Hasil Teks</button>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>Developed with ❤️ by <strong>Mr.Rm19</strong> | <a href="https://github.com/Rm19x" target="_blank" rel="noopener noreferrer">github.com/Rm19x</a></p>
+  </footer>
+
+  <script>
+    const teksArea = document.getElementById('teksArea');
+    const counterInfo = document.getElementById('counterInfo');
+    
+    const btnUpper = document.getElementById('btnUpper');
+    const btnLower = document.getElementById('btnLower');
+    const btnTitle = document.getElementById('btnTitle');
+    const btnSentence = document.getElementById('btnSentence');
+    const btnCopy = document.getElementById('btnCopy');
+
+    // Fungsi menghitung statistik jumlah kata dan karakter
+    function updateCounter() {
+      const teks = teksArea.value;
+      const karakter = teks.length;
+      const kata = teks.trim() === "" ? 0 : teks.trim().split(/\s+/).length;
+      counterInfo.textContent = `Karakter: ${karakter} | Kata: ${kata}`;
+    }
+
+    teksArea.addEventListener('input', updateCounter);
+
+    // 1. Mengubah ke UPPERCASE (BESAR SEMUA)
+    btnUpper.addEventListener('click', () => {
+      teksArea.value = teksArea.value.toUpperCase();
+      updateCounter();
+    });
+
+    // 2. Mengubah ke lowercase (kecil semua)
+    btnLower.addEventListener('click', () => {
+      teksArea.value = teksArea.value.toLowerCase();
+      updateCounter();
+    });
+
+    // 3. Mengubah ke Title Case (Kapital Di Setiap Awal Kata)
+    btnTitle.addEventListener('click', () => {
+      let teks = teksArea.value.toLowerCase();
+      teksArea.value = teks.replace(/\b\w/g, (match) => match.toUpperCase());
+      updateCounter();
+    });
+
+    // 4. Mengubah ke Sentence Case (Kapital Hanya Di Awal Kalimat)
+    btnSentence.addEventListener('click', () => {
+      let teks = teksArea.value.toLowerCase();
+      teksArea.value = teks.replace(/(^\s*\w|[\.\!\?]\s*\w)/g, (match) => match.toUpperCase());
+      updateCounter();
+    });
+
+    // Fungsi menyalin teks ke clipboard
+    btnCopy.addEventListener('click', () => {
+      if (!teksArea.value.trim()) {
+        alert('Area teks kosong, tidak ada yang bisa disalin!');
+        return;
+      }
+      navigator.clipboard.writeText(teksArea.value);
+      alert('Teks berhasil disalin ke clipboard!');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+---
+// src/pages/tools/tagihan-listrik.astro
+const title = "Kalkulator Estimasi Tagihan Listrik PLN - Easyly";
+---
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background-color: #2c3e50; color: white; padding: 1.5rem; text-align: center; }
+    .nav-back { display: inline-block; color: white; text-decoration: none; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid white; padding: 0.3rem 0.8rem; border-radius: 4px; }
+    .nav-back:hover { background: rgba(255,255,255,0.1); }
+    .container { max-width: 650px; margin: 2rem auto; padding: 0 1rem; flex: 1; }
+    .card { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .form-group { margin-bottom: 1.2rem; }
+    label { display: block; font-weight: bold; margin-bottom: 0.5rem; color: #2c3e50; font-size: 0.95rem; }
+    select, input { width: 100%; padding: 0.7rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1rem; }
+    .info-text { font-size: 0.85rem; color: #666; margin-top: 0.2rem; }
+    .btn { display: block; width: 100%; background-color: #f39c12; color: white; border: none; padding: 0.8rem; border-radius: 4px; font-weight: bold; font-size: 1rem; cursor: pointer; text-align: center; margin-top: 1.5rem; }
+    .btn:hover { background-color: #e67e22; }
+    .result-box { margin-top: 2rem; display: none; background: #fff9e6; border-left: 5px solid #f39c12; padding: 1.2rem; border-radius: 4px; border: 1px solid #ffeaa7; }
+    .result-title { font-size: 1.1rem; font-weight: bold; color: #d35400; margin-top: 0; margin-bottom: 0.8rem; }
+    .value-highlight { font-weight: bold; color: #d35400; }
+    footer { background-color: #2c3e50; color: #bdc3c7; text-align: center; padding: 1rem; font-size: 0.9rem; margin-top: 2rem; }
+    footer a { color: #3498db; text-decoration: none; font-weight: bold; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="nav-back">⬅ Kembali ke Beranda</a>
+    <h1>⚡ Kalkulator Estimasi Tagihan Listrik PLN</h1>
+    <p>Hitung perkiraan biaya tagihan listrik pascabayar bulanan Anda berdasarkan jumlah pemakaian kWh</p>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      
+      <div class="form-group">
+        <label for="golonganTarif">Golongan Tarif & Daya Listrik Rumah</label>
+        <select id="golonganTarif">
+          <option value="1352">R-1/TR 900 VA (Rumah Tangga Mampu) - Rp 1.352 / kWh</option>
+          <option value="1444" selected>R-1/TR 1300 VA s/d 2200 VA - Rp 1.444 / kWh</option>
+          <option value="1699">R-2 s/d R-3/TR 3500 VA ke atas - Rp 1.699 / kWh</option>
+        </select>
+        <div class="info-text">*Pilih sesuai batas kapasitas meteran listrik rumah Anda.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="jumlahKwh">Total Konsumsi Pemakaian Listrik Sebulan (kWh)</label>
+        <input type="number" id="jumlahKwh" value="150" min="1" placeholder="Contoh: 150" />
+        <div class="info-text">*Dapat dilihat dari selisih angka stand meter bulan ini dikurangi bulan lalu.</div>
+      </div>
+
+      <button class="btn" id="hitungListrikBtn">Hitung Estimasi Tagihan</button>
+
+      <div class="result-box" id="resultBox">
+        <p class="result-title">🧾 Rincian Estimasi Biaya Listrik Bulanan:</p>
+        
+        <div style="line-height: 1.8; font-size: 1rem; color: #333;">
+          <div>Biaya Pemakaian Energi murni: <span id="txtBiayaMurni" class="value-highlight">-</span></div>
+          <div>Estimasi Pajak Penerangan Jalan (PPJ) (~10%): <span id="txtPpj" class="value-highlight">-</span></div>
+          <div>Biaya Administrasi Bank standar: <span id="txtBiayaAdmin" class="value-highlight">Rp 3.000</span></div>
+          
+          <hr style="border: 0; border-top: 1px solid #ffeaa7; margin: 0.8rem 0;" />
+          <div style="font-size: 1.15rem; font-weight: bold;">Total Perkiraan Tagihan: <span id="txtTotalTagihan" style="color: #c0392b;">-</span></div>
+          
+          <div style="font-size: 0.85rem; color: #666; line-height: 1.4; margin-top: 1rem;">
+            *Catatan: Perhitungan di atas merupakan estimasi kasar. Besaran PPJ tiap daerah kabupaten/kota bervariasi antara 3% s/d 10%. Belum termasuk denda keterlambatan jika ada.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>Developed with ❤️ by <strong>Mr.Rm19</strong> | <a href="https://github.com/Rm19x" target="_blank" rel="noopener noreferrer">github.com/Rm19x</a></p>
+  </footer>
+
+  <script>
+    const golonganTarifSelect = document.getElementById('golonganTarif');
+    const jumlahKwhInput = document.getElementById('jumlahKwh');
+    const hitungListrikBtn = document.getElementById('hitungListrikBtn');
+    const resultBox = document.getElementById('resultBox');
+
+    const txtBiayaMurni = document.getElementById('txtBiayaMurni');
+    const txtPpj = document.getElementById('txtPpj');
+    const txtTotalTagihan = document.getElementById('txtTotalTagihan');
+
+    function formatRupiah(angka) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(angka);
+    }
+
+    hitungListrikBtn.addEventListener('click', () => {
+      const tarifPerKwh = parseFloat(golonganTarifSelect.value);
+      const totalKwh = parseFloat(jumlahKwhInput.value) || 0;
+
+      if (totalKwh <= 0) {
+        alert('Silakan masukkan total pemakaian kWh yang valid (lebih dari 0)!');
+        return;
+      }
+
+      // 1. Hitung biaya pemakaian murni
+      const biayaMurni = totalKwh * tarifPerKwh;
+
+      // 2. Hitung estimasi PPJ sebesar rata-rata 10%
+      const ppj = biayaMurni * 0.10;
+
+      // 3. Tambahan biaya admin bank standar retail
+      const biayaAdmin = 3000;
+
+      // 4. Hitung total kumulatif keseluruhan tagihan
+      const totalTagihan = biayaMurni + ppj + biayaAdmin;
+
+      // Cetak keluaran teks terformat Rupiah ke komponen UI
+      txtBiayaMurni.textContent = formatRupiah(biayaMurni);
+      txtPpj.textContent = formatRupiah(ppj);
+      txtTotalTagihan.textContent = formatRupiah(totalTagihan);
+
+      resultBox.style.display = 'block';
+      resultBox.scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>

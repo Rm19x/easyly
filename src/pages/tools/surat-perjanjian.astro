@@ -1,0 +1,175 @@
+---
+// src/pages/tools/surat-perjanjian.astro
+const title = "Generator Surat Perjanjian Kontrak Sederhana - Easyly";
+---
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background-color: #2c3e50; color: white; padding: 1.5rem; text-align: center; }
+    .nav-back { display: inline-block; color: white; text-decoration: none; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid white; padding: 0.3rem 0.8rem; border-radius: 4px; }
+    .nav-back:hover { background: rgba(255,255,255,0.1); }
+    .container { max-width: 800px; margin: 2rem auto; padding: 0 1rem; flex: 1; }
+    .card { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { margin-bottom: 1.2rem; }
+    .section-title { font-weight: bold; color: #2c3e50; border-bottom: 2px solid #34495e; padding-bottom: 0.3rem; margin-bottom: 1rem; margin-top: 1.5rem; }
+    label { display: block; font-weight: bold; margin-bottom: 0.3rem; font-size: 0.9rem; color: #555; }
+    input, textarea, select { width: 100%; padding: 0.6rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 0.95rem; }
+    textarea { height: 80px; resize: vertical; }
+    .btn { display: block; width: 100%; background-color: #34495e; color: white; border: none; padding: 0.8rem; border-radius: 4px; font-weight: bold; font-size: 1rem; cursor: pointer; text-align: center; margin-top: 1.5rem; }
+    .btn:hover { background-color: #2c3e50; }
+    .result-box { margin-top: 2rem; display: none; }
+    .output-area { background: #fffcf5; border: 1px dashed #d35400; padding: 2rem; border-radius: 4px; white-space: pre-wrap; font-family: 'Times New Roman', Times, serif; line-height: 1.6; font-size: 1.1rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.02); }
+    .btn-copy { background-color: #27ae60; margin-top: 1rem; }
+    .btn-copy:hover { background-color: #219653; }
+    footer { background-color: #2c3e50; color: #bdc3c7; text-align: center; padding: 1rem; font-size: 0.9rem; margin-top: 2rem; }
+    footer a { color: #3498db; text-decoration: none; font-weight: bold; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="nav-back">⬅ Kembali ke Beranda</a>
+    <h1>📜 Generator Surat Perjanjian Kontrak</h1>
+    <p>Buat draf surat perjanjian kesepakatan kesepahaman/kontrak bisnis sederhana secara sah dan formal</p>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      
+      <div class="form-group">
+        <label for="jenisPerjanjian">Jenis Perjanjian</label>
+        <select id="jenisPerjanjian">
+          <option value="Jual Beli">Perjanjian Jual Beli Barang</option>
+          <option value="Hutang Piutang">Perjanjian Hutang Piutang</option>
+          <option value="Kerjasama Bisnis">Perjanjian Kemitraan / Kerjasama</option>
+        </select>
+      </div>
+
+      <div class="section-title">👤 PIHAK PERTAMA (I)</div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="p1Nama">Nama Lengkap Pihak 1</label>
+          <input type="text" id="p1Nama" placeholder="Contoh: Budi Santoso" />
+        </div>
+        <div class="form-group">
+          <label for="p1Ktp">No. KTP Pihak 1</label>
+          <input type="text" id="p1Ktp" placeholder="3201xxxxxxxxxxxx" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="p1Alamat">Alamat Lengkap Pihak 1</label>
+        <input type="text" id="p1Alamat" placeholder="Jl. Merdeka No. 12, Jakarta" />
+      </div>
+
+      <div class="section-title">👤 PIHAK KEDUA (II)</div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="p2Nama">Nama Lengkap Pihak 2</label>
+          <input type="text" id="p2Nama" placeholder="Contoh: Andi Wijaya" />
+        </div>
+        <div class="form-group">
+          <label for="p2Ktp">No. KTP Pihak 2</label>
+          <input type="text" id="p2Ktp" placeholder="3202xxxxxxxxxxxx" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="p2Alamat">Alamat Lengkap Pihak 2</label>
+        <input type="text" id="p2Alamat" placeholder="Jl. Jend Sudirman No. 45, Bandung" />
+      </div>
+
+      <div class="section-title">📝 INTI KESEPAKATAN (PASAL 1)</div>
+      <div class="form-group">
+        <label for="isiPerjanjian">Detail Hak & Kewajiban Kontrak</label>
+        <textarea id="isiPerjanjian" placeholder="Contoh: Pihak Pertama setuju menjual sebuah Laptop Asus ROG kepada Pihak Kedua dengan nilai kesepakatan sebesar Rp 15.000.000 yang dibayarkan lunas saat penandatanganan surat ini."></textarea>
+      </div>
+
+      <button class="btn" id="generateBtn">Buat Draf Surat Perjanjian</button>
+
+      <div class="result-box" id="resultBox">
+        <label style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Hasil Draf Surat Kontrak Resmi:</label>
+        <div class="output-area" id="outputPerjanjian"></div>
+        <button class="btn btn-copy" id="copyBtn">Salin Teks Perjanjian</button>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>Developed with ❤️ by <strong>Mr.Rm19</strong> | <a href="https://github.com/Rm19x" target="_blank" rel="noopener noreferrer">github.com/Rm19x</a></p>
+  </footer>
+
+  <script>
+    const generateBtn = document.getElementById('generateBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const resultBox = document.getElementById('resultBox');
+    const outputPerjanjian = document.getElementById('outputPerjanjian');
+
+    generateBtn.addEventListener('click', () => {
+      const jenis = document.getElementById('jenisPerjanjian').value;
+      const p1Nama = document.getElementById('p1Nama').value || '[Nama Pihak 1]';
+      const p1Ktp = document.getElementById('p1Ktp').value || '[KTP Pihak 1]';
+      const p1Alamat = document.getElementById('p1Alamat').value || '[Alamat Pihak 1]';
+      
+      const p2Nama = document.getElementById('p2Nama').value || '[Nama Pihak 2]';
+      const p2Ktp = document.getElementById('p2Ktp').value || '[KTP Pihak 2]';
+      const p2Alamat = document.getElementById('p2Alamat').value || '[Alamat Pihak 2]';
+      
+      const isi = document.getElementById('isiPerjanjian').value || '[Tulis rincian barang, nilai uang, nominal hutang, atau sistem bagi hasil kerjasama di sini]';
+
+      const tanggalHariIni = new Date().toLocaleDateString('id-ID', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long'
+      });
+
+      const template = `SURAT PERJANJIAN ${jenis.toUpperCase()}
+
+Pada hari ini, ${tanggalHariIni}, bertempat di kediaman yang disepakati, kami yang bertandatangan di bawah ini:
+
+1. Nama: ${p1Nama}
+   No. KTP: ${p1Ktp}
+   Alamat: ${p1Alamat}
+   Selanjutnya disebut sebagai PIHAK PERTAMA.
+
+2. Nama: ${p2Nama}
+   No. KTP: ${p2Ktp}
+   Alamat: ${p2Alamat}
+   Selanjutnya disebut sebagai PIHAK KEDUA.
+
+Kedua belah pihak secara sadar dan tanpa paksaan dari pihak manapun, sepakat untuk mengadakan Perjanjian ${jenis} dengan ketentuan diatur dalam pasal-pasal berikut:
+
+PASAL 1: KESEPAKATAN UTAMA
+${isi}
+
+PASAL 2: PENYELESAIAN SENGKETA
+Apabila terjadi perselisihan di kemudian hari mengenai pelaksanaan perjanjian ini, Kedua Belah Pihak sepakat untuk menyelesaikannya secara kekeluargaan mufakat. Jika tidak tercapai mufakat, maka perselisihan akan diselesaikan melalui jalur hukum yang berlaku di Negara Republik Indonesia.
+
+Demikian Surat Perjanjian ini dibuat dalam rangkap 2 (dua) yang masing-masing bermaterai cukup dan mempunyai kekuatan hukum yang sama.
+
+PIHAK PERTAMA,                         PIHAK KEDUA,
+
+
+
+
+( ${p1Nama} )                          ( ${p2Nama} )`;
+
+      outputPerjanjian.textContent = template;
+      resultBox.style.display = 'block';
+      resultBox.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(outputPerjanjian.textContent);
+      alert('Surat perjanjian berhasil disalin ke clipboard!');
+    });
+  </script>
+</body>
+</html>

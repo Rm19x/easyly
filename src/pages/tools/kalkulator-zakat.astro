@@ -1,0 +1,138 @@
+---
+// src/pages/tools/kalkulator-zakat.astro
+const title = "Kalkulator Zakat, Infaq, & Shodaqoh - Easyly";
+---
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background-color: #2c3e50; color: white; padding: 1.5rem; text-align: center; }
+    .nav-back { display: inline-block; color: white; text-decoration: none; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid white; padding: 0.3rem 0.8rem; border-radius: 4px; }
+    .nav-back:hover { background: rgba(255,255,255,0.1); }
+    .container { max-width: 650px; margin: 2rem auto; padding: 0 1rem; flex: 1; }
+    .card { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .form-group { margin-bottom: 1.2rem; }
+    label { display: block; font-weight: bold; margin-bottom: 0.5rem; color: #2c3e50; font-size: 0.95rem; }
+    input { width: 100%; padding: 0.7rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1rem; }
+    .info-text { font-size: 0.85rem; color: #666; margin-top: 0.2rem; }
+    .btn { display: block; width: 100%; background-color: #16a085; color: white; border: none; padding: 0.8rem; border-radius: 4px; font-weight: bold; font-size: 1rem; cursor: pointer; text-align: center; margin-top: 1.5rem; }
+    .btn:hover { background-color: #117a65; }
+    .result-box { margin-top: 2rem; display: none; background: #e8f8f5; border-left: 5px solid #16a085; padding: 1.2rem; border-radius: 4px; }
+    .result-title { font-size: 1.1rem; font-weight: bold; color: #117a65; margin-top: 0; }
+    .status-badge { inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: bold; font-size: 0.9rem; margin-bottom: 1rem; display: inline-block; }
+    .status-wajib { background-color: #f9e79f; color: #b7950b; }
+    .status-bebas { background-color: #d5f5e3; color: #1e8449; }
+    footer { background-color: #2c3e50; color: #bdc3c7; text-align: center; padding: 1rem; font-size: 0.9rem; margin-top: 2rem; }
+    footer a { color: #3498db; text-decoration: none; font-weight: bold; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="nav-back">⬅ Kembali ke Beranda</a>
+    <h1>🕌 Kalkulator Zakat, Infaq, & Shodaqoh</h1>
+    <p>Hitung kewajiban zakat maal dan rencana infaq sukarela secara praktis</p>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      
+      <div class="form-group">
+        <label for="hargaEmas">Harga Emas Saat Ini per Gram (Rp)</label>
+        <input type="number" id="hargaEmas" value="1400000" placeholder="Contoh: 1400000" />
+        <div class="info-text">*Digunakan untuk menghitung batas Nisab Zakat Maal (setara 85 gram emas)</div>
+      </div>
+
+      <div class="form-group">
+        <label for="totalHarta">Total Harta Simpanan (Rp)</label>
+        <input type="number" id="totalHarta" placeholder="Contoh: 150000000" />
+        <div class="info-text">*Akumulasi tabungan, emas, perhiasan, atau aset lancar yang mengendap selama 1 tahun</div>
+      </div>
+
+      <div class="form-group">
+        <label for="infaqSukarela">Rencana Infaq / Shodaqoh Sukarela (Rp)</label>
+        <input type="number" id="infaqSukarela" value="0" placeholder="Masukkan jumlah nominal jika ada" />
+      </div>
+
+      <button class="btn" id="hitungZakatBtn">Hitung Jumlah Amalan</button>
+
+      <div class="result-box" id="resultBox">
+        <p class="result-title">📊 Rincian Hasil Perhitungan:</p>
+        <div id="statusNisab" class="status-badge"></div>
+        
+        <div style="line-height: 1.8; font-size: 1rem;">
+          <div>Batas Nisab Minimal: <strong id="txtNisab">Rp 0</strong></div>
+          <div>Kewajiban Zakat Maal (2.5%): <strong id="txtZakat" style="color: #e74c3c;">Rp 0</strong></div>
+          <div>Infaq / Shodaqoh Anda: <strong id="txtInfaq">Rp 0</strong></div>
+          <hr style="border: 0; border-top: 1px solid #ccc; margin: 0.8rem 0;" />
+          <div style="font-size: 1.1rem;">Total Dana yang Dikeluarkan: <strong id="txtTotalSemua" style="color: #27ae60;">Rp 0</strong></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>Developed with ❤️ by <strong>Mr.Rm19</strong> | <a href="https://github.com/Rm19x" target="_blank" rel="noopener noreferrer">github.com/Rm19x</a></p>
+  </footer>
+
+  <script>
+    const hargaEmasInput = document.getElementById('hargaEmas');
+    const totalHartaInput = document.getElementById('totalHarta');
+    const infaqSukarelaInput = document.getElementById('infaqSukarela');
+    const hitungZakatBtn = document.getElementById('hitungZakatBtn');
+    const resultBox = document.getElementById('resultBox');
+    
+    const statusNisab = document.getElementById('statusNisab');
+    const txtNisab = document.getElementById('txtNisab');
+    const txtZakat = document.getElementById('txtZakat');
+    const txtInfaq = document.getElementById('txtInfaq');
+    const txtTotalSemua = document.getElementById('txtTotalSemua');
+
+    function formatRupiah(angka) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(angka);
+    }
+
+    hitungZakatBtn.addEventListener('click', () => {
+      const hargaEmas = parseFloat(hargaEmasInput.value) || 0;
+      const totalHarta = parseFloat(totalHartaInput.value) || 0;
+      const infaq = parseFloat(infaqSukarelaInput.value) || 0;
+
+      if (totalHarta <= 0 && infaq <= 0) {
+        alert('Silakan masukkan jumlah harta atau rencana nominal infaq terlebih dahulu.');
+        return;
+      }
+
+      // Rumus Nisab Zakat Maal = Ekuivalen 85 gram emas murni
+      const batasNisab = hargaEmas * 85;
+      let nominalZakat = 0;
+
+      if (totalHarta >= batasNisab) {
+        nominalZakat = totalHarta * 0.025; // 2.5%
+        statusNisab.textContent = "✓ Harta Mencapai Nisab (Wajib Zakat)";
+        statusNisab.className = "status-badge status-wajib";
+      } else {
+        nominalZakat = 0;
+        statusNisab.textContent = "ℹ Harta Belum Mencapai Nisab (Bebas Zakat Maal)";
+        statusNisab.className = "status-badge status-bebas";
+      }
+
+      const totalSemua = nominalZakat + infaq;
+
+      // Tampilkan hasil ke UI
+      txtNisab.textContent = formatRupiah(batasNisab);
+      txtZakat.textContent = formatRupiah(nominalZakat);
+      txtInfaq.textContent = formatRupiah(infaq);
+      txtTotalSemua.textContent = formatRupiah(totalSemua);
+
+      resultBox.style.display = 'block';
+      resultBox.scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>

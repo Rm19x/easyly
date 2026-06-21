@@ -1,0 +1,135 @@
+---
+// src/pages/tools/cipher-rahasia.astro
+const title = "Pengode Teks Rahasia (Caesar Cipher) - Easyly";
+---
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background-color: #2c3e50; color: white; padding: 1.5rem; text-align: center; }
+    .nav-back { display: inline-block; color: white; text-decoration: none; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid white; padding: 0.3rem 0.8rem; border-radius: 4px; }
+    .nav-back:hover { background: rgba(255,255,255,0.1); }
+    .container { max-width: 700px; margin: 2rem auto; padding: 0 1rem; flex: 1; }
+    .card { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .form-group { margin-bottom: 1.2rem; }
+    label { display: block; font-weight: bold; margin-bottom: 0.5rem; color: #2c3e50; }
+    textarea, input, select { width: 100%; padding: 0.7rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1rem; }
+    textarea { height: 100px; resize: vertical; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .btn-group { display: flex; gap: 1rem; margin-top: 1.5rem; }
+    .btn { flex: 1; border: none; padding: 0.8rem; border-radius: 4px; font-weight: bold; font-size: 1rem; cursor: pointer; text-align: center; color: white; }
+    .btn-enc { background-color: #e74c3c; }
+    .btn-enc:hover { background-color: #c0392b; }
+    .btn-dec { background-color: #2980b9; }
+    .btn-dec:hover { background-color: #2471a3; }
+    .result-box { margin-top: 2rem; display: none; }
+    .output-area { background: #f8f9fa; border: 1px solid #cbd5e1; padding: 1.2rem; border-radius: 6px; font-family: monospace; font-size: 1.1rem; white-space: pre-wrap; word-break: break-all; }
+    footer { background-color: #2c3e50; color: #bdc3c7; text-align: center; padding: 1rem; font-size: 0.9rem; margin-top: 2rem; }
+    footer a { color: #3498db; text-decoration: none; font-weight: bold; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="nav-back">⬅ Kembali ke Beranda</a>
+    <h1>🔐 Pengode Teks Sandi Rahasia</h1>
+    <p>Amankan atau terjemahkan pesan rahasia menggunakan metode kriptografi klasik Caesar Cipher</p>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      
+      <div class="form-group">
+        <label for="teksInput">Masukkan Teks / Pesan</label>
+        <textarea id="teksInput" placeholder="Ketik pesan yang ingin dienkripsi atau didekripsi di sini..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="kunciSandi">Kunci Pergeseran Alfabet (1 - 25)</label>
+        <input type="number" id="kunciSandi" value="3" min="1" max="25" />
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-enc" id="encBtn">🔒 Enkripsi (Gembok Pesan)</button>
+        <button class="btn btn-dec" id="decBtn">🔓 Dekripsi (Buka Pesan)</button>
+      </div>
+
+      <div class="result-box" id="resultBox">
+        <label id="labelHasil">Hasil Transformasi Pesan:</label>
+        <div class="output-area" id="outputTeks">-</div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>Developed with ❤️ by <strong>Mr.Rm19</strong> | <a href="https://github.com/Rm19x" target="_blank" rel="noopener noreferrer">github.com/Rm19x</a></p>
+  </footer>
+
+  <script>
+    const teksInput = document.getElementById('teksInput');
+    const kunciSandi = document.getElementById('kunciSandi');
+    const encBtn = document.getElementById('encBtn');
+    const decBtn = document.getElementById('decBtn');
+    const resultBox = document.getElementById('resultBox');
+    const outputTeks = document.getElementById('outputTeks');
+    const labelHasil = document.getElementById('labelHasil');
+
+    // Fungsi algoritma Caesar Cipher untuk memproses teks
+    function prosesCaesar(teks, shift) {
+      // Normalisasi pergeseran agar selalu berada di rentang positif 0-25
+      shift = (shift % 26 + 26) % 26;
+      
+      return teks.split('').map(karakter => {
+        let kode = karakter.charCodeAt(0);
+
+        // Filter Huruf Kapital (A - Z)
+        if (kode >= 65 && kode <= 90) {
+          return String.fromCharCode(((kode - 65 + shift) % 26) + 65);
+        }
+        // Filter Huruf Kecil (a - z)
+        else if (kode >= 97 && kode <= 122) {
+          return String.fromCharCode(((kode - 97 + shift) % 26) + 97);
+        }
+        
+        // Karakter selain huruf (spasi, simbol, angka) tidak diubah
+        return karakter;
+      }).join('');
+    }
+
+    encBtn.addEventListener('click', () => {
+      const teks = teksInput.value;
+      const shift = parseInt(kunciSandi.value) || 3;
+
+      if (!teks.trim()) {
+        alert('Silakan isi teks terlebih dahulu!');
+        return;
+      }
+
+      labelHasil.innerHTML = "<strong>🔒 Hasil Enkripsi (Ciphertext):</strong>";
+      outputTeks.textContent = prosesCaesar(teks, shift);
+      resultBox.style.display = 'block';
+    });
+
+    decBtn.addEventListener('click', () => {
+      const teks = teksInput.value;
+      const shift = parseInt(kunciSandi.value) || 3;
+
+      if (!teks.trim()) {
+        alert('Silakan isi teks terlebih dahulu!');
+        return;
+      }
+
+      labelHasil.innerHTML = "<strong>🔓 Hasil Dekripsi (Plaintext):</strong>";
+      // Dekripsi membalikkan arah pergeseran (dikali minus satu)
+      outputTeks.textContent = prosesCaesar(teks, -shift);
+      resultBox.style.display = 'block';
+    });
+  </script>
+</body>
+</html>

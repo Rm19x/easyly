@@ -1,0 +1,123 @@
+---
+// src/pages/tools/lorem-ipsum-lokal.astro
+const title = "Generator Lorem Ipsum Kosakata Lokal - Easyly";
+---
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background-color: #2c3e50; color: white; padding: 1.5rem; text-align: center; }
+    .nav-back { display: inline-block; color: white; text-decoration: none; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid white; padding: 0.3rem 0.8rem; border-radius: 4px; }
+    .nav-back:hover { background: rgba(255,255,255,0.1); }
+    .container { max-width: 700px; margin: 2rem auto; padding: 0 1rem; flex: 1; }
+    .card { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .form-group { margin-bottom: 1.2rem; }
+    label { display: block; font-weight: bold; margin-bottom: 0.5rem; color: #2c3e50; }
+    input, select { width: 100%; padding: 0.7rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1rem; }
+    .btn { display: block; width: 100%; background-color: #2980b9; color: white; border: none; padding: 0.8rem; border-radius: 4px; font-weight: bold; font-size: 1rem; cursor: pointer; text-align: center; margin-top: 1.5rem; }
+    .btn:hover { background-color: #2471a3; }
+    .result-box { margin-top: 2rem; display: none; }
+    .output-text { background: #f8f9fa; border: 1px solid #e2e8f0; padding: 1.5rem; border-radius: 6px; min-height: 100px; white-space: pre-wrap; line-height: 1.6; font-size: 1rem; }
+    .btn-copy { background-color: #27ae60; margin-top: 1rem; }
+    .btn-copy:hover { background-color: #219653; }
+    footer { background-color: #2c3e50; color: #bdc3c7; text-align: center; padding: 1rem; font-size: 0.9rem; margin-top: 2rem; }
+    footer a { color: #3498db; text-decoration: none; font-weight: bold; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="nav-back">⬅ Kembali ke Beranda</a>
+    <h1>🇮🇩 Generator Lorem Ipsum Kosakata Lokal</h1>
+    <p>Hasilkan teks dummy/acak dengan kearifan lokal Indonesia untuk keperluan layout desain web Anda</p>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      
+      <div class="form-group">
+        <label for="jumlahParagraf">Jumlah Paragraf yang Dibutuhkan</label>
+        <input type="number" id="jumlahParagraf" value="3" min="1" max="10" />
+      </div>
+
+      <div class="form-group">
+        <label for="tipeKosakata">Gaya Bahasa / Tema Kosakata</label>
+        <select id="tipeKosakata">
+          <option value="senja">Anak Senja (Kopi, Puisi, Hujan, Memudar)</option>
+          <option value="formal">Birokrasi Formal (Gotong Royong, Sosialisasi, Sinergi)</option>
+        </select>
+      </div>
+
+      <button class="btn" id="generateBtn">Hasilkan Teks Acak</button>
+
+      <div class="result-box" id="resultBox">
+        <label style="margin-bottom: 0.5rem; display: block;">Hasil Teks Dummy:</label>
+        <div class="output-text" id="outputText"></div>
+        <button class="btn btn-copy" id="copyBtn">Salin Teks</button>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>Developed with ❤️ by <strong>Mr.Rm19</strong> | <a href="https://github.com/Rm19x" target="_blank" rel="noopener noreferrer">github.com/Rm19x</a></p>
+  </footer>
+
+  <script>
+    const kataSenja = ["kopi", "senja", "hujan", "kenangan", "merindu", "pahit", "memudar", "jingga", "filosofi", "estetik", "rasa", "aksara", "semesta", "dialog", "sudut", "ruang", "jemari", "teduh", "melodi", "diskusi"];
+    const kataFormal = ["gotong royong", "sinergi", "sosialisasi", "implementasi", "anggaran", "rapat", "koordinasi", "pembangunan", "masyarakat", "wilayah", "kebijakan", "kinerja", "optimalisasi", "evaluasi", "potensi", "strategis", "regulasi", "advokasi"];
+
+    const jumlahParagrafInput = document.getElementById('jumlahParagraf');
+    const tipeKosakataSelect = document.getElementById('tipeKosakata');
+    const generateBtn = document.getElementById('generateBtn');
+    const resultBox = document.getElementById('resultBox');
+    const outputText = document.getElementById('outputText');
+    const copyBtn = document.getElementById('copyBtn');
+
+    function acakKata(array) {
+      return array[Math.floor(Math.random() * array.length)];
+    }
+
+    function buatKalimat(kamus) {
+      let panjangKalimat = Math.floor(Math.random() * 8) + 6; // 6-13 kata per kalimat
+      let kalimat = [];
+      for (let i = 0; i < panjangKalimat; i++) {
+        kalimat.push(acakKata(kamus));
+      }
+      let teks = kalimat.join(" ");
+      return teks.charAt(0).toUpperCase() + teks.slice(1) + ".";
+    }
+
+    generateBtn.addEventListener('click', () => {
+      const jml = parseInt(jumlahParagrafInput.value) || 3;
+      const tipe = tipeKosakataSelect.value;
+      const kamus = tipe === "senja" ? kataSenja : kataFormal;
+
+      let hasilSeluruhnya = [];
+
+      for (let p = 0; p < jml; p++) {
+        let kalimatDiParagraf = Math.floor(Math.random() * 3) + 4; // 4-6 kalimat per paragraf
+        let isiParagraf = [];
+        for (let k = 0; k < kalimatDiParagraf; k++) {
+          isiParagraf.push(buatKalimat(kamus));
+        }
+        hasilSeluruhnya.push(isiParagraf.join(" "));
+      }
+
+      outputText.textContent = hasilSeluruhnya.join("\n\n");
+      resultBox.style.display = "block";
+      resultBox.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(outputText.textContent);
+      alert('Teks berhasil disalin ke clipboard!');
+    });
+  </script>
+</body>
+</html>

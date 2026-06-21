@@ -1,0 +1,146 @@
+---
+// src/pages/tools/servis-kendaraan.astro
+const title = "Kalkulator Pengingat Jadwal Servis Kendaraan - Easyly";
+---
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background-color: #2c3e50; color: white; padding: 1.5rem; text-align: center; }
+    .nav-back { display: inline-block; color: white; text-decoration: none; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid white; padding: 0.3rem 0.8rem; border-radius: 4px; }
+    .nav-back:hover { background: rgba(255,255,255,0.1); }
+    .container { max-width: 700px; margin: 2rem auto; padding: 0 1rem; flex: 1; }
+    .card { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .form-group { margin-bottom: 1.2rem; }
+    label { display: block; font-weight: bold; margin-bottom: 0.5rem; color: #2c3e50; }
+    input, select { width: 100%; padding: 0.7rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1rem; }
+    .btn { display: block; width: 100%; background-color: #e67e22; color: white; border: none; padding: 0.8rem; border-radius: 4px; font-weight: bold; font-size: 1rem; cursor: pointer; text-align: center; margin-top: 1.5rem; }
+    .btn:hover { background-color: #d35400; }
+    .result-box { margin-top: 2rem; display: none; }
+    .schedule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .schedule-item { padding: 1rem; border-radius: 6px; border-left: 5px solid #3498db; background: #f0faf0; border: 1px solid #e2e8f0; border-left: 5px solid #e67e22; }
+    .schedule-title { font-weight: bold; color: #2c3e50; font-size: 1rem; }
+    .schedule-km { font-size: 1.4rem; font-weight: bold; color: #d35400; margin: 0.3rem 0; font-family: monospace; }
+    footer { background-color: #2c3e50; color: #bdc3c7; text-align: center; padding: 1rem; font-size: 0.9rem; margin-top: 2rem; }
+    footer a { color: #3498db; text-decoration: none; font-weight: bold; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="nav-back">⬅ Kembali ke Beranda</a>
+    <h1>🏍️ Kalkulator Pengingat Servis Kendaraan</h1>
+    <p>Hitung batas kilometer (odometer) berkendara untuk jadwal ganti oli dan servis rutin berkala selanjutnya</p>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      
+      <div class="form-group">
+        <label for="jenisKendaraan">Jenis Kendaraan</label>
+        <select id="jenisKendaraan">
+          <option value="motor-matic">Sepeda Motor Matic</option>
+          <option value="motor-manual">Sepeda Motor Manual / Bebek / Sport</option>
+          <option value="mobil">Mobil Penumpang</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="odometerSekarang">Angka Odometer Saat Ini (KM)</label>
+        <input type="number" id="odometerSekarang" placeholder="Contoh: 12500" value="10000" min="0" />
+      </div>
+
+      <button class="btn" id="hitungServisBtn">Kalkulasikan Jadwal</button>
+
+      <div class="result-box" id="resultBox">
+        <label style="font-weight: bold; color: #2c3e50; display: block; margin-bottom: 0.5rem;">📅 Rekomendasi Servis Pada Odometer Berikutnya:</label>
+        
+        <div class="schedule-grid">
+          <div class="schedule-item">
+            <div class="schedule-title">🛢️ Ganti Oli Mesin</div>
+            <div class="schedule-km" id="kmOliMesin">- KM</div>
+            <div style="font-size: 0.85rem; color: #666;">Interval berkala per ~2.000 KM sampai 5.000 KM.</div>
+          </div>
+
+          <div class="schedule-item" id="boxOliGardan">
+            <div class="schedule-title">⚙️ Ganti Oli Gardan (Gear)</div>
+            <div class="schedule-km" id="kmOliGardan">- KM</div>
+            <div style="font-size: 0.85rem; color: #666;">Khusus matic, diganti setiap 2 kali ganti oli mesin.</div>
+          </div>
+
+          <div class="schedule-item">
+            <div class="schedule-title">🔧 Tune-Up / Servis Rutin</div>
+            <div class="schedule-km" id="kmServisRutin">- KM</div>
+            <div style="font-size: 0.85rem; color: #666;">Pembersihan filter udara, injektor/karburator, & cek rem.</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>Developed with ❤️ by <strong>Mr.Rm19</strong> | <a href="https://github.com/Rm19x" target="_blank" rel="noopener noreferrer">github.com/Rm19x</a></p>
+  </footer>
+
+  <script>
+    const jenisKendaraan = document.getElementById('jenisKendaraan');
+    const odometerSekarang = document.getElementById('odometerSekarang');
+    const hitungServisBtn = document.getElementById('hitungServisBtn');
+    const resultBox = document.getElementById('resultBox');
+
+    const kmOliMesin = document.getElementById('kmOliMesin');
+    const kmOliGardan = document.getElementById('kmOliGardan');
+    const kmServisRutin = document.getElementById('kmServisRutin');
+    const boxOliGardan = document.getElementById('boxOliGardan');
+
+    function formatKm(angka) {
+      return new Intl.NumberFormat('id-ID').format(angka) + " KM";
+    }
+
+    hitungServisBtn.addEventListener('click', () => {
+      const currentKm = parseInt(odometerSekarang.value) || 0;
+      const tipe = jenisKendaraan.value;
+
+      if (currentKm < 0) {
+        alert('Angka kilometer tidak boleh negatif!');
+        return;
+      }
+
+      let intervalOliMesin = 2000;
+      let intervalOliGardan = 8000;
+      let intervalServis = 4000;
+
+      // Atur interval kustom berdasarkan standar jenis transportasi
+      if (tipe === "motor-manual") {
+        intervalOliMesin = 2500;
+        intervalServis = 4000;
+        boxOliGardan.style.display = "none"; // Motor manual tidak pakai oli gardan CVT
+      } else if (tipe === "motor-matic") {
+        intervalOliMesin = 2000;
+        intervalOliGardan = 4000;
+        intervalServis = 4000;
+        boxOliGardan.style.display = "block";
+      } else if (tipe === "mobil") {
+        intervalOliMesin = 5000;
+        intervalServis = 10000;
+        boxOliGardan.style.display = "none";
+      }
+
+      // Hitung target angka odometer mendatang
+      kmOliMesin.textContent = formatKm(currentKm + intervalOliMesin);
+      kmOliGardan.textContent = formatKm(currentKm + intervalOliGardan);
+      kmServisRutin.textContent = formatKm(currentKm + intervalServis);
+
+      resultBox.style.display = 'block';
+      resultBox.scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+---
+// src/pages/tools/interview-kerja.astro
+const title = "Simulator Latihan Interview Kerja - Easyly";
+---
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background-color: #2c3e50; color: white; padding: 1.5rem; text-align: center; }
+    .nav-back { display: inline-block; color: white; text-decoration: none; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid white; padding: 0.3rem 0.8rem; border-radius: 4px; }
+    .nav-back:hover { background: rgba(255,255,255,0.1); }
+    .container { max-width: 700px; margin: 2rem auto; padding: 0 1rem; flex: 1; }
+    .card { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .form-group { margin-bottom: 1.2rem; }
+    label { display: block; font-weight: bold; margin-bottom: 0.5rem; color: #2c3e50; }
+    select, textarea { width: 100%; padding: 0.7rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1rem; }
+    textarea { height: 120px; resize: vertical; }
+    .btn { display: block; width: 100%; background-color: #2980b9; color: white; border: none; padding: 0.8rem; border-radius: 4px; font-weight: bold; font-size: 1rem; cursor: pointer; text-align: center; margin-top: 1rem; }
+    .btn:hover { background-color: #2471a3; }
+    .result-box { margin-top: 2rem; display: none; background: #f0fdf4; border-left: 5px solid #2cc71; padding: 1.2rem; border-radius: 4px; border: 1px solid #dcfce7; }
+    .result-title { font-size: 1.1rem; font-weight: bold; color: #166534; margin-top: 0; margin-bottom: 0.5rem; }
+    .tip-box { font-size: 0.95rem; color: #1f2937; line-height: 1.6; }
+    footer { background-color: #2c3e50; color: #bdc3c7; text-align: center; padding: 1rem; font-size: 0.9rem; margin-top: 2rem; }
+    footer a { color: #3498db; text-decoration: none; font-weight: bold; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="nav-back">⬅ Kembali ke Beranda</a>
+    <h1>💼 Simulator Latihan Interview Kerja</h1>
+    <p>Simulasikan jawaban Anda dan pelajari tips trik meloloskan diri dari pertanyaan jebakan HRD</p>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      
+      <div class="form-group">
+        <label for="pilihPertanyaan">Pilih Pertanyaan Interview Populer:</label>
+        <select id="pilihPertanyaan">
+          <option value="intro">"Ceritakan tentang diri Anda!"</option>
+          <option value="weakness">"Apa kelemahan terbesar yang Anda miliki?"</option>
+          <option value="salary">"Berapa ekspektasi gaji yang Anda harapkan di perusahaan ini?"</option>
+          <option value="reason">"Mengapa kami harus menerima Anda bekerja di sini?"</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="jawabanUser">Ketik Draf Jawaban Latihan Anda di Sini:</label>
+        <textarea id="jawabanUser" placeholder="Tuliskan poin-poin yang ingin Anda ucapkan di depan penguji/HRD..."></textarea>
+      </div>
+
+      <button class="btn" id="analisisBtn">Evaluasi & Lihat Tips HRD</button>
+
+      <div class="result-box" id="resultBox">
+        <p class="result-title">💡 Strategi & Tips Menjawab Terbaik dari HRD:</p>
+        <div class="tip-box" id="tipKonten">-</div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>Developed with ❤️ by <strong>Mr.Rm19</strong> | <a href="https://github.com/Rm19x" target="_blank" rel="noopener noreferrer">github.com/Rm19x</a></p>
+  </footer>
+
+  <script>
+    // Database Tips Strategi Jawaban Wawancara Kerja
+    const tipsDatabase = {
+      intro: "<strong>Strategi Menjawab:</strong> Gunakan rumus formula <i>Past-Present-Future</i>. Ceritakan secara singkat pencapaian kuliah/kerja masa lalu Anda, apa fokus keahlian Anda saat ini, dan mengapa Anda bersemangat melamar posisi ini untuk masa depan karier Anda. Hindari curhat masalah pribadi atau mengulang seluruh isi CV.",
+      weakness: "<strong>Strategi Menjawab:</strong> Jangan pernah menjawab 'Saya tidak punya kelemahan' atau 'Saya orangnya terlalu perfeksionis'. Sebutkan satu kelemahan nyata yang tidak merusak core pekerjaan utama Anda, lalu langsung ikuti dengan solusi konkret (Action) yang sedang Anda lakukan untuk membenahi kekurangan tersebut.",
+      salary: "<strong>Strategi Menjawab:</strong> Lakukan riset kisaran UMR regional atau rata-rata standar gaji posisi tersebut di industri saat ini melalui platform lowongan kerja. Berikan rentang angka (misal: Rp 5.000.000 - Rp 6.500.000) dan tegaskan bahwa Anda sangat terbuka untuk bernegosiasi menyesuaikan dengan benefit tunjangan perusahaan.",
+      reason: "<strong>Strategi Menjawab:</strong> Hubungkan benang merah antara kualifikasi keahlian unik Anda dengan masalah atau visi proyek yang sedang dihadapi oleh perusahaan. Tunjukkan kontribusi nyata apa yang bisa Anda berikan untuk mempermudah operasional atau meningkatkan performa tim kerja mereka."
+    };
+
+    const pilihPertanyaan = document.getElementById('pilihPertanyaan');
+    const jawabanUser = document.getElementById('jawabanUser');
+    const analisisBtn = document.getElementById('analisisBtn');
+    const resultBox = document.getElementById('resultBox');
+    const tipKonten = document.getElementById('tipKonten');
+
+    analisisBtn.addEventListener('click', () => {
+      const teksJawaban = jawabanUser.value.trim();
+      const tipeKunci = pilihPertanyaan.value;
+
+      if (!teksJawaban) {
+        alert('Silakan ketik draf jawaban latihan Anda terlebih dahulu agar simulasi lebih maksimal!');
+        return;
+      }
+
+      // Tampilkan saran berdasarkan pilihan jenis pertanyaan
+      tipKonten.innerHTML = tipsDatabase[tipeKunci];
+      resultBox.style.display = 'block';
+      resultBox.scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>

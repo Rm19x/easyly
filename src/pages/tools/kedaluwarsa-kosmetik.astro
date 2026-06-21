@@ -1,0 +1,143 @@
+---
+// src/pages/tools/cek-skincare.astro
+const title = "Alat Cek Masa Kedaluwarsa Kosmetik & Skincare - Easyly";
+---
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background-color: #2c3e50; color: white; padding: 1.5rem; text-align: center; }
+    .nav-back { display: inline-block; color: white; text-decoration: none; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid white; padding: 0.3rem 0.8rem; border-radius: 4px; }
+    .nav-back:hover { background: rgba(255,255,255,0.1); }
+    .container { max-width: 650px; margin: 2rem auto; padding: 0 1rem; flex: 1; }
+    .card { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .form-group { margin-bottom: 1.2rem; }
+    label { display: block; font-weight: bold; margin-bottom: 0.5rem; color: #2c3e50; font-size: 0.95rem; }
+    input, select { width: 100%; padding: 0.7rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1rem; }
+    .info-text { font-size: 0.85rem; color: #666; margin-top: 0.2rem; }
+    .btn { display: block; width: 100%; background-color: #9b59b6; color: white; border: none; padding: 0.8rem; border-radius: 4px; font-weight: bold; font-size: 1rem; cursor: pointer; text-align: center; margin-top: 1.5rem; }
+    .btn:hover { background-color: #8e44ad; }
+    .result-box { margin-top: 2rem; display: none; padding: 1.2rem; border-radius: 4px; }
+    .status-aman { background-color: #d5f5e3; border-left: 5px solid #2ecc71; color: #1e8449; }
+    .status-bahaya { background-color: #fadbd8; border-left: 5px solid #e74c3c; color: #78281f; }
+    .result-title { font-size: 1.1rem; font-weight: bold; margin-top: 0; margin-bottom: 0.5rem; }
+    footer { background-color: #2c3e50; color: #bdc3c7; text-align: center; padding: 1rem; font-size: 0.9rem; margin-top: 2rem; }
+    footer a { color: #3498db; text-decoration: none; font-weight: bold; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="nav-back">⬅ Kembali ke Beranda</a>
+    <h1>🧴 Cek Masa Kedaluwarsa Kosmetik & Skincare</h1>
+    <p>Hitung batas aman penggunaan produk kecantikan Anda setelah kemasan dibuka (Simbol PAO)</p>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      
+      <div class="form-group">
+        <label for="namaProduk">Nama Produk Skincare / Kosmetik</label>
+        <input type="text" id="namaProduk" placeholder="Contoh: Serum Vitamin C Wardah" />
+      </div>
+
+      <div class="form-group">
+        <label for="tglBuka">Tanggal Pertama Kali Kemasan Dibuka</label>
+        <input type="date" id="tglBuka" />
+      </div>
+
+      <div class="form-group">
+        <label for="paoMasa">Masa PAO (Period After Opening) Produk</label>
+        <select id="paoMasa">
+          <option value="6">6 Bulan (6M) - Umumnya Maskara, Eyeliner, Serum Cair</option>
+          <option value="12" selected>12 Bulan (12M) - Umumnya Pelembab, Pembersih Wajah, Toner</option>
+          <option value="18">18 Bulan (18M) - Umumnya Lipstik, Lip Cream, Sunscreen tertentu</option>
+          <option value="24">24 Bulan (24M) - Umumnya Bedak Tabur, Eyeshadow Palette, Parfum</option>
+        </select>
+        <div class="info-text">*Cari logo wadah terbuka kecil di belakang botol kemasan (misal: 6M, 12M, 24M)</div>
+      </div>
+
+      <button class="btn" id="hitungPaoBtn">Periksa Status Kelayakan</button>
+
+      <div class="result-box" id="resultBox">
+        <p class="result-title" id="resTitle">Hasil Analisis Produk:</p>
+        <div style="line-height: 1.6; font-size: 1rem;">
+          <div id="txtNamaProduk">Produk: <strong>-</strong></div>
+          <div id="txtBatasKadaluwarsa">Batas Maksimal Penggunaan: <strong>-</strong></div>
+          <div id="txtSisaHari" style="font-weight: bold; margin-top: 0.5rem;">Sisa Waktu: -</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>Developed with ❤️ by <strong>Mr.Rm19</strong> | <a href="https://github.com/Rm19x" target="_blank" rel="noopener noreferrer">github.com/Rm19x</a></p>
+  </footer>
+
+  <script>
+    const namaProdukInput = document.getElementById('namaProduk');
+    const tglBukaInput = document.getElementById('tglBuka');
+    const paoMasaSelect = document.getElementById('paoMasa');
+    const hitungPaoBtn = document.getElementById('hitungPaoBtn');
+    const resultBox = document.getElementById('resultBox');
+    
+    const txtNamaProduk = document.getElementById('txtNamaProduk');
+    const txtBatasKadaluwarsa = document.getElementById('txtBatasKadaluwarsa');
+    const txtSisaHari = document.getElementById('txtSisaHari');
+
+    // Set default tanggal hari ini pada form input date
+    tglBukaInput.value = new Date().toISOString().split('T')[0];
+
+    function formatTanggalIndo(dateObj) {
+      return dateObj.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    hitungPaoBtn.addEventListener('click', () => {
+      const nama = namaProdukInput.value.trim() || "Produk Skincare Tanpa Nama";
+      const tglBukaVal = tglBukaInput.value;
+      const bulanPao = parseInt(paoMasaSelect.value);
+
+      if (!tglBukaVal) {
+        alert('Silakan tentukan tanggal pertama kali produk dibuka!');
+        return;
+      }
+
+      const tglBuka = new Date(tglBukaVal);
+      const tglExpired = new Date(tglBuka);
+      
+      // Tambahkan bulan sesuai aturan PAO produk
+      tglExpired.setMonth(tglExpired.getMonth() + bulanPao);
+
+      const hariIni = new Date();
+      // Set jam ke 0 agar perhitungan murni selisih tanggal kalender
+      hariIni.setHours(0,0,0,0);
+      tglExpired.setHours(0,0,0,0);
+
+      // Hitung selisih hari milidetik
+      const selisihWaktu = tglExpired.getTime() - hariIni.getTime();
+      const sisaHari = Math.ceil(selisihWaktu / (1000 * 60 * 60 * 24));
+
+      // Update data teks ke kontainer UI
+      txtNamaProduk.innerHTML = `Produk: <strong>${nama}</strong>`;
+      txtBatasKadaluwarsa.innerHTML = `Batas Maksimal Penggunaan: <strong>${formatTanggalIndo(tglExpired)}</strong>`;
+
+      if (sisaHari > 0) {
+        resultBox.className = "result-box status-aman";
+        txtSisaHari.textContent = `🟢 Aman Digunakan! Produk menyisakan sekitar ${sisaHari} hari lagi sebelum kedaluwarsa.`;
+      } else {
+        resultBox.className = "result-box status-bahaya";
+        txtSisaHari.textContent = `🔴 Bahaya Kedaluwarsa! Produk sudah melewati batas aman sejak ${Math.abs(sisaHari)} hari yang lalu. Sebaiknya jangan diaplikasikan ke kulit wajah lagi.`;
+      }
+
+      resultBox.style.display = 'block';
+      resultBox.scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+---
+// src/pages/tools/penyusutan-aset.astro
+const title = "Kalkulator Penyusutan Aset Akuntansi - Easyly";
+---
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background-color: #2c3e50; color: white; padding: 1.5rem; text-align: center; }
+    .nav-back { display: inline-block; color: white; text-decoration: none; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid white; padding: 0.3rem 0.8rem; border-radius: 4px; }
+    .nav-back:hover { background: rgba(255,255,255,0.1); }
+    .container { max-width: 750px; margin: 2rem auto; padding: 0 1rem; flex: 1; }
+    .card { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { margin-bottom: 1.2rem; }
+    label { display: block; font-weight: bold; margin-bottom: 0.5rem; color: #2c3e50; font-size: 0.95rem; }
+    input { width: 100%; padding: 0.7rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1rem; }
+    .info-text { font-size: 0.85rem; color: #666; margin-top: 0.2rem; }
+    .btn { display: block; width: 100%; background-color: #27ae60; color: white; border: none; padding: 0.8rem; border-radius: 4px; font-weight: bold; font-size: 1rem; cursor: pointer; text-align: center; margin-top: 1.5rem; }
+    .btn:hover { background-color: #219653; }
+    .result-box { margin-top: 2rem; display: none; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { border: 1px solid #ddd; padding: 0.8rem; text-align: left; font-size: 0.95rem; }
+    th { background-color: #f2f2f2; color: #2c3e50; }
+    tr:nth-child(even) { background-color: #f9f9f9; }
+    footer { background-color: #2c3e50; color: #bdc3c7; text-align: center; padding: 1rem; font-size: 0.9rem; margin-top: 2rem; }
+    footer a { color: #3498db; text-decoration: none; font-weight: bold; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="nav-back">⬅ Kembali ke Beranda</a>
+    <h1>📊 Kalkulator Penyusutan Aset (Depresiasi)</h1>
+    <p>Hitung nilai penyusutan aset bisnis Anda per tahun dan per bulan dengan metode Garis Lurus</p>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      
+      <div class="form-group">
+        <label for="hargaPerolehan">Harga Perolehan Aset (Rp)</label>
+        <input type="number" id="hargaPerolehan" placeholder="Contoh: 15000000" value="10000000" />
+        <div class="info-text">*Total biaya pembelian awal termasuk ongkos kirim/pemasangan.</div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="nilaiSisa">Nilai Sisa / Residu (Rp)</label>
+          <input type="number" id="nilaiSisa" placeholder="Contoh: 1000000" value="1000000" />
+          <div class="info-text">*Perkiraan harga jual aset di akhir umur ekonomisnya.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="umurEkonomis">Umur Ekonomis (Tahun)</label>
+          <input type="number" id="umurEkonomis" placeholder="Contoh: 5" value="4" min="1" max="50" />
+          <div class="info-text">*Berapa lama aset diperkirakan bisa dipakai.</div>
+        </div>
+      </div>
+
+      <button class="btn" id="hitungSusutBtn">Hitung Penyusutan</button>
+
+      <div class="result-box" id="resultBox">
+        <label style="font-weight: bold; color: #2c3e50; display: block; margin-bottom: 0.5rem;">📋 Tabel Jadwal Penyusutan Aset:</label>
+        
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 70px; text-align: center;">Tahun Ke</th>
+              <th>Beban Penyusutan (Tahun)</th>
+              <th>Akumulasi Penyusutan</th>
+              <th>Nilai Buku Aset</th>
+            </tr>
+          </thead>
+          <tbody id="tabelBody">
+            </tbody>
+        </table>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>Developed with ❤️ by <strong>Mr.Rm19</strong> | <a href="https://github.com/Rm19x" target="_blank" rel="noopener noreferrer">github.com/Rm19x</a></p>
+  </footer>
+
+  <script>
+    const hargaPerolehanInput = document.getElementById('hargaPerolehan');
+    const nilaiSisaInput = document.getElementById('nilaiSisa');
+    const umurEkonomisInput = document.getElementById('umurEkonomis');
+    const hitungSusutBtn = document.getElementById('hitungSusutBtn');
+    const resultBox = document.getElementById('resultBox');
+    const tabelBody = document.getElementById('tabelBody');
+
+    function formatRupiah(angka) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(angka);
+    }
+
+    hitungSusutBtn.addEventListener('click', () => {
+      const hargaPerolehan = parseFloat(hargaPerolehanInput.value) || 0;
+      const nilaiSisa = parseFloat(nilaiSisaInput.value) || 0;
+      const umurEkonomis = parseInt(umurEkonomisInput.value) || 1;
+
+      if (hargaPerolehan <= nilaiSisa) {
+        alert('Harga perolehan harus lebih besar daripada nilai sisa/residu!');
+        return;
+      }
+
+      // Rumus Garis Lurus: (Harga Perolehan - Nilai Sisa) / Umur Ekonomis
+      const bebanTahunan = (hargaPerolehan - nilaiSisa) / umurEkonomis;
+      
+      tabelBody.innerHTML = "";
+      let akumulasiPenyusutan = 0;
+      let nilaiBuku = hargaPerolehan;
+
+      // Baris awal (Tahun 0) saat aset baru dibeli
+      let trAwal = document.createElement('tr');
+      trAwal.innerHTML = `
+        <td style="text-align: center;">0</td>
+        <td>-</td>
+        <td>-</td>
+        <td><strong>${formatRupiah(nilaiBuku)}</strong></td>
+      `;
+      tabelBody.appendChild(trAwal);
+
+      // Looping perhitungan tiap tahun
+      for (let i = 1; i <= umurEkonomis; i++) {
+        acumulasiPenyusutan += bebanTahunan;
+        nilaiBuku -= bebanTahunan;
+
+        let tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="text-align: center;">${i}</td>
+          <td>${formatRupiah(bebanTahunan)}</td>
+          <td>${formatRupiah(acumulasiPenyusutan)}</td>
+          <td><strong>${formatRupiah(Math.max(nilaiBuku, nilaiSisa))}</strong></td>
+        `;
+        tabelBody.appendChild(tr);
+      }
+
+      resultBox.style.display = 'block';
+      resultBox.scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+---
+// src/pages/tools/masa-subur.astro
+const title = "Kalkulator Masa Subur & Siklus Menstruasi - Easyly";
+---
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background-color: #2c3e50; color: white; padding: 1.5rem; text-align: center; }
+    .nav-back { display: inline-block; color: white; text-decoration: none; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid white; padding: 0.3rem 0.8rem; border-radius: 4px; }
+    .nav-back:hover { background: rgba(255,255,255,0.1); }
+    .container { max-width: 650px; margin: 2rem auto; padding: 0 1rem; flex: 1; }
+    .card { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .form-group { margin-bottom: 1.2rem; }
+    label { display: block; font-weight: bold; margin-bottom: 0.5rem; color: #2c3e50; font-size: 0.95rem; }
+    input { width: 100%; padding: 0.7rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1rem; }
+    .info-text { font-size: 0.85rem; color: #666; margin-top: 0.2rem; }
+    .btn { display: block; width: 100%; background-color: #e91e63; color: white; border: none; padding: 0.8rem; border-radius: 4px; font-weight: bold; font-size: 1rem; cursor: pointer; text-align: center; margin-top: 1.5rem; }
+    .btn:hover { background-color: #c2185b; }
+    .result-box { margin-top: 2rem; display: none; background: #fce4ec; border-left: 5px solid #e91e63; padding: 1.2rem; border-radius: 4px; }
+    .result-title { font-size: 1.1rem; font-weight: bold; color: #c2185b; margin-top: 0; margin-bottom: 0.8rem; }
+    .date-highlight { font-weight: bold; color: #c2185b; }
+    footer { background-color: #2c3e50; color: #bdc3c7; text-align: center; padding: 1rem; font-size: 0.9rem; margin-top: 2rem; }
+    footer a { color: #3498db; text-decoration: none; font-weight: bold; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="nav-back">⬅ Kembali ke Beranda</a>
+    <h1>🗓️ Kalkulator Masa Subur & Siklus Menstruasi</h1>
+    <p>Hitung perkiraan tanggal menstruasi berikutnya serta estimasi jendela masa subur Anda</p>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      
+      <div class="form-group">
+        <label for="lastPeriod">Hari Pertama Menstruasi Terakhir (HPHT)</label>
+        <input type="date" id="lastPeriod" />
+        <div class="info-text">*Pilih tanggal pertama kali darah haid keluar pada siklus terakhir</div>
+      </div>
+
+      <div class="form-group">
+        <label for="cycleLength">Lama Siklus Menstruasi Rata-rata (Hari)</label>
+        <input type="number" id="cycleLength" value="28" min="20" max="45" />
+        <div class="info-text">*Umumnya berjarak antara 21 hingga 35 hari (default: 28 hari)</div>
+      </div>
+
+      <button class="btn" id="hitungSuburBtn">Hitung Siklus & Masa Subur</button>
+
+      <div class="result-box" id="resultBox">
+        <p class="result-title">📊 Hasil Prediksi Siklus Anda:</p>
+        
+        <div style="line-height: 1.8; font-size: 1rem; color: #333;">
+          <div>Perkiraan Menstruasi Berikutnya: <span id="nextPeriodTxt" class="date-highlight">-</span></div>
+          <div>Estimasi Hari Ovulasi (Puncak Masa Subur): <span id="ovulationTxt" class="date-highlight">-</span></div>
+          <div>Jendela Masa Subur (Kemungkinan Hamil Tinggi): <span id="fertileWindowTxt" class="date-highlight">-</span></div>
+          
+          <hr style="border: 0; border-top: 1px solid #f8bbd0; margin: 1rem 0;" />
+          <div style="font-size: 0.85rem; color: #666; line-height: 1.4;">
+            *Catatan: Perhitungan ini menggunakan metode kalender standar dan bersifat matematis. Siklus tubuh nyata bisa bervariasi dipengaruhi oleh stres, pola makan, atau kondisi hormon. Bukan pengganti saran medis profesional.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>Developed with ❤️ by <strong>Mr.Rm19</strong> | <a href="https://github.com/Rm19x" target="_blank" rel="noopener noreferrer">github.com/Rm19x</a></p>
+  </footer>
+
+  <script>
+    const lastPeriodInput = document.getElementById('lastPeriod');
+    const cycleLengthInput = document.getElementById('cycleLength');
+    const hitungSuburBtn = document.getElementById('hitungSuburBtn');
+    const resultBox = document.getElementById('resultBox');
+
+    const nextPeriodTxt = document.getElementById('nextPeriodTxt');
+    const ovulationTxt = document.getElementById('ovulationTxt');
+    const fertileWindowTxt = document.getElementById('fertileWindowTxt');
+
+    // Set default tanggal hari ini pada input date agar memudahkan pengguna
+    const hariIni = new Date().toISOString().split('T')[0];
+    lastPeriodInput.value = hariIni;
+
+    function formatTanggalIndo(dateObj) {
+      const opsi = { year: 'numeric', month: 'long', day: 'numeric' };
+      return dateObj.toLocaleDateString('id-ID', opsi);
+    }
+
+    hitungSuburBtn.addEventListener('click', () => {
+      const dateVal = lastPeriodInput.value;
+      const cycleDays = parseInt(cycleLengthInput.value) || 28;
+
+      if (!dateVal) {
+        alert('Silakan pilih tanggal HPHT terlebih dahulu.');
+        return;
+      }
+
+      const hpht = new Date(dateVal);
+
+      // 1. Hitung Hari Pertama Menstruasi Berikutnya = HPHT + Lama Siklus
+      const nextPeriod = new Date(hpht);
+      nextPeriod.setDate(nextPeriod.getDate() + cycleDays);
+
+      // 2. Hitung Hari Ovulasi = Hari Menstruasi Berikutnya dikurangi 14 hari
+      const ovulationDay = new Date(nextPeriod);
+      ovulationDay.setDate(ovulationDay.getDate() - 14);
+
+      // 3. Hitung Jendela Masa Subur = 3 hari sebelum ovulasi sampai 1 hari setelah ovulasi
+      const fertileStart = new Date(ovulationDay);
+      fertileStart.setDate(fertileStart.getDate() - 3);
+
+      const fertileEnd = new Date(ovulationDay);
+      fertileEnd.setDate(fertileEnd.getDate() + 1);
+
+      // Tampilkan hasil ke UI dengan format tanggal lokal Indonesia
+      nextPeriodTxt.textContent = formatTanggalIndo(nextPeriod);
+      ovulationTxt.textContent = formatTanggalIndo(ovulationDay);
+      fertileWindowTxt.textContent = `${formatTanggalIndo(fertileStart)} s/d ${formatTanggalIndo(fertileEnd)}`;
+
+      resultBox.style.display = 'block';
+      resultBox.scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>

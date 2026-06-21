@@ -1,0 +1,116 @@
+---
+// src/pages/tools/foto-ktp.astro
+const title = "Generator & Pengecek Ukuran Pasfoto KTP - Easyly";
+---
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background-color: #2c3e50; color: white; padding: 1.5rem; text-align: center; }
+    .nav-back { display: inline-block; color: white; text-decoration: none; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid white; padding: 0.3rem 0.8rem; border-radius: 4px; }
+    .nav-back:hover { background: rgba(255,255,255,0.1); }
+    .container { max-width: 700px; margin: 2rem auto; padding: 0 1rem; flex: 1; }
+    .card { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .form-group { margin-bottom: 1.2rem; }
+    label { display: block; font-weight: bold; margin-bottom: 0.5rem; color: #2c3e50; }
+    select, input[type="file"] { width: 100%; padding: 0.7rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1rem; }
+    .preview-area { margin-top: 1.5rem; display: none; text-align: center; background: #f9f9f9; padding: 1.5rem; border: 2px dashed #cbd5e1; border-radius: 6px; }
+    .photo-frame { margin: 0 auto 1rem auto; box-shadow: 0 4px 10px rgba(0,0,0,0.15); background-color: #ddd; background-size: cover; background-position: center; transition: width 0.3s, height 0.3s; }
+    .info-box { background-color: #e8f4fd; border-left: 4px solid #3498db; padding: 1rem; margin-top: 1rem; border-radius: 4px; text-align: left; font-size: 0.95rem; }
+    footer { background-color: #2c3e50; color: #bdc3c7; text-align: center; padding: 1rem; font-size: 0.9rem; margin-top: 2rem; }
+    footer a { color: #3498db; text-decoration: none; font-weight: bold; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="nav-back">⬅ Kembali ke Beranda</a>
+    <h1>📸 Simulator & Ukuran Pasfoto KTP</h1>
+    <p>Sesuaikan foto Anda ke dalam standar ukuran pasfoto formal (2x3, 3x4, 4x6) secara presisi</p>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      
+      <div class="form-group">
+        <label for="fotoUpload">Pilih File Foto Anda</label>
+        <input type="file" id="fotoUpload" accept="image/*" />
+      </div>
+
+      <div class="form-group">
+        <label for="ukuranSelect">Pilih Standar Ukuran Pasfoto:</label>
+        <select id="ukuranSelect">
+          <option value="3x4" data-w="113" data-h="151" data-cm="2.8 x 3.8 cm">3 x 4 cm (Standar KTP / SAMSAT)</option>
+          <option value="2x3" data-w="76" data-h="113" data-cm="2.0 x 3.0 cm">2 x 3 cm (Standar Buku Nikah)</option>
+          <option value="4x6" data-w="151" data-h="226" data-cm="3.8 x 5.6 cm">4 x 6 cm (Standar SKCK / Ijazah)</option>
+        </select>
+      </div>
+
+      <div class="preview-area" id="previewArea">
+        <label>Pratinjau Hasil Pasfoto:</label>
+        <div class="photo-frame" id="photoFrame"></div>
+        
+        <div class="info-box">
+          <strong>ℹ️ Informasi Dimensi Cetak:</strong>
+          <div id="infoDimensi">Ukuran Cetak Fisik: 2.8 x 3.8 cm (300 DPI)</div>
+          <div style="margin-top: 0.3rem; font-size: 0.85rem; color: #555;">*Gunakan kertas foto berjenis Glossy saat mencetak agar hasil maksimal sesuai standar pencetakan instansi.</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>Developed with ❤️ by <strong>Mr.Rm19</strong> | <a href="https://github.com/Rm19x" target="_blank" rel="noopener noreferrer">github.com/Rm19x</a></p>
+  </footer>
+
+  <script>
+    const fotoUpload = document.getElementById('fotoUpload');
+    const ukuranSelect = document.getElementById('ukuranSelect');
+    const previewArea = document.getElementById('previewArea');
+    const photoFrame = document.getElementById('photoFrame');
+    const infoDimensi = document.getElementById('infoDimensi');
+
+    let currentImgUrl = "";
+
+    function updateFrameSize() {
+      const selectedOption = ukuranSelect.options[ukuranSelect.selectedIndex];
+      const widthPx = selectedOption.getAttribute('data-w');
+      const heightPx = selectedOption.getAttribute('data-h');
+      const cmText = selectedOption.getAttribute('data-cm');
+
+      // Update ukuran frame visual di layar
+      photoFrame.style.width = widthPx + "px";
+      photoFrame.style.height = heightPx + "px";
+      
+      // Tampilkan info teks cm
+      infoDimensi.textContent = `Ukuran Cetak Fisik asli: ${cmText} (Sesuai Standar Cetak 300 DPI)`;
+    }
+
+    fotoUpload.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        if (currentImgUrl) {
+          URL.revokeObjectURL(currentImgUrl);
+        }
+        currentImgUrl = URL.createObjectURL(file);
+        photoFrame.style.backgroundImage = `url('${currentImgUrl}')`;
+        previewArea.style.display = "block";
+        updateFrameSize();
+        previewArea.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+
+    ukuranSelect.addEventListener('change', () => {
+      if (currentImgUrl) {
+        updateFrameSize();
+      }
+    });
+  </script>
+</body>
+</html>
